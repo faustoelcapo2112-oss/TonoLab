@@ -7,9 +7,7 @@
   <title>TonoLab</title>
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -19,10 +17,7 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
-    .app {
-      max-width: 680px;
-      margin: 0 auto;
-    }
+    .app { max-width: 680px; margin: 0 auto; }
 
     header {
       display: flex;
@@ -34,10 +29,7 @@
       letter-spacing: -0.7px;
     }
 
-    .logo {
-      color: #8de3d4;
-      font-size: 28px;
-    }
+    .logo { color: #8de3d4; font-size: 28px; }
 
     .card {
       background: #1b2030;
@@ -47,10 +39,7 @@
       margin-bottom: 16px;
     }
 
-    h2 {
-      font-size: 17px;
-      margin: 0 0 8px;
-    }
+    h2 { font-size: 17px; margin: 0 0 8px; }
 
     .subtitle {
       color: #a5adc1;
@@ -65,8 +54,7 @@
       gap: 10px;
     }
 
-    button,
-    .file-button {
+    button, .file-button {
       border: 0;
       border-radius: 12px;
       padding: 14px 12px;
@@ -77,10 +65,7 @@
       font-family: inherit;
     }
 
-    .primary {
-      background: #8de3d4;
-      color: #101820;
-    }
+    .primary { background: #8de3d4; color: #101820; }
 
     .secondary {
       background: #293146;
@@ -88,19 +73,10 @@
       border: 1px solid #3a435a;
     }
 
-    button:disabled {
-      opacity: 0.5;
-      cursor: wait;
-    }
+    button:disabled { opacity: 0.5; cursor: wait; }
+    input[type="file"] { display: none; }
 
-    input[type="file"] {
-      display: none;
-    }
-
-    #previewArea {
-      display: none;
-      margin-top: 18px;
-    }
+    #previewArea { display: none; margin-top: 18px; }
 
     #preview {
       display: block;
@@ -111,15 +87,8 @@
       border-radius: 12px;
     }
 
-    .preview-actions {
-      display: flex;
-      gap: 10px;
-      margin-top: 12px;
-    }
-
-    .preview-actions button {
-      flex: 1;
-    }
+    .preview-actions { display: flex; gap: 10px; margin-top: 12px; }
+    .preview-actions button { flex: 1; }
 
     #status {
       color: #a5adc1;
@@ -128,9 +97,7 @@
       margin-top: 14px;
     }
 
-    #results {
-      display: none;
-    }
+    #results { display: none; }
 
     #canvas {
       width: 100%;
@@ -148,10 +115,7 @@
       border-bottom: 1px solid #30374a;
     }
 
-    .person:last-child {
-      border-bottom: none;
-      padding-bottom: 0;
-    }
+    .person:last-child { border-bottom: none; padding-bottom: 0; }
 
     .swatch {
       width: 48px;
@@ -161,24 +125,9 @@
       border: 1px solid #ffffff24;
     }
 
-    .person strong {
-      display: block;
-      font-size: 15px;
-      line-height: 1.4;
-      text-transform: capitalize;
-    }
-
-    .person p {
-      margin: 5px 0 0;
-      color: #a5adc1;
-      font-size: 13px;
-    }
-
-    .empty {
-      color: #a5adc1;
-      font-size: 14px;
-      line-height: 1.5;
-    }
+    .person strong { display: block; font-size: 15px; line-height: 1.4; text-transform: capitalize; }
+    .person p { margin: 5px 0 0; color: #a5adc1; font-size: 13px; }
+    .empty { color: #a5adc1; font-size: 14px; line-height: 1.5; }
 
     .footnote {
       color: #858da3;
@@ -188,17 +137,9 @@
     }
 
     @media (max-width: 420px) {
-      body {
-        padding: 18px 12px;
-      }
-
-      .card {
-        padding: 16px;
-      }
-
-      .buttons {
-        grid-template-columns: 1fr;
-      }
+      body { padding: 18px 12px; }
+      .card { padding: 16px; }
+      .buttons { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -218,55 +159,29 @@
       </p>
 
       <div class="buttons">
-        <button class="primary" id="cameraButton">
-          📷 Sacar una foto
-        </button>
-
-        <button class="secondary" id="galleryButton">
-          🖼️ Elegir una foto
-        </button>
+        <button class="primary" id="cameraButton">📷 Sacar una foto</button>
+        <button class="secondary" id="galleryButton">🖼️ Elegir una foto</button>
       </div>
 
-      <input
-        id="cameraInput"
-        type="file"
-        accept="image/*"
-        capture="environment"
-      >
-
-      <input
-        id="galleryInput"
-        type="file"
-        accept="image/*"
-      >
+      <input id="cameraInput" type="file" accept="image/*" capture="environment">
+      <input id="galleryInput" type="file" accept="image/*">
 
       <div id="previewArea">
         <img id="preview" alt="Vista previa de la fotografía">
 
         <div class="preview-actions">
-          <button class="secondary" id="changeButton">
-            Cambiar foto
-          </button>
-
-          <button class="primary" id="analyzeButton">
-            Analizar foto
-          </button>
+          <button class="secondary" id="changeButton">Cambiar foto</button>
+          <button class="primary" id="analyzeButton">Analizar foto</button>
         </div>
       </div>
 
-      <div id="status" role="status">
-        Esperando una fotografía.
-      </div>
+      <div id="status" role="status">Esperando una fotografía.</div>
     </section>
 
     <section class="card" id="results">
       <h2>Resultados</h2>
-      <p class="subtitle">
-        Los recuadros indican los rostros detectados.
-      </p>
-
+      <p class="subtitle">Los recuadros indican los rostros detectados.</p>
       <canvas id="canvas"></canvas>
-
       <div id="people"></div>
 
       <p class="footnote">
@@ -288,7 +203,6 @@
 
     let detector = null;
     let selectedImage = null;
-    let detectorReady = false;
 
     const cameraInput = $("cameraInput");
     const galleryInput = $("galleryInput");
@@ -296,9 +210,7 @@
     const previewArea = $("previewArea");
     const analyzeButton = $("analyzeButton");
     const canvas = $("canvas");
-    const ctx = canvas.getContext("2d", {
-      willReadFrequently: true
-    });
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
 
     function setStatus(message) {
       $("status").textContent = message;
@@ -310,33 +222,15 @@
 
     function rgbToHex(rgb) {
       return "#" + rgb
-        .map(value =>
-          Math.round(value)
-            .toString(16)
-            .padStart(2, "0")
-        )
+        .map(value => Math.round(value).toString(16).padStart(2, "0"))
         .join("")
         .toUpperCase();
     }
 
-    // Calcula un índice de oscuridad entre 1 y 100.
+    // Oscuridad basada en HSL: blanco = 0%, negro = 100%.
     function darknessPercentage(rgb) {
-      const linear = rgb.map(value => {
-        value /= 255;
-
-        return value <= 0.04045
-          ? value / 12.92
-          : Math.pow((value + 0.055) / 1.055, 2.4);
-      });
-
-      const luminance =
-        0.2126 * linear[0] +
-        0.7152 * linear[1] +
-        0.0722 * linear[2];
-
-      return Math.round(
-        clamp((1 - luminance) * 100, 1, 100)
-      );
+      const { l } = rgbToHsl(rgb);
+      return Math.round(100 - l);
     }
 
     function rgbToHsl([r, g, b]) {
@@ -350,40 +244,25 @@
 
       let h = 0;
       let s = 0;
-
       const l = (max + min) / 2;
 
       if (delta !== 0) {
         s = delta / (1 - Math.abs(2 * l - 1));
 
         switch (max) {
-          case r:
-            h = 60 * (((g - b) / delta) % 6);
-            break;
-
-          case g:
-            h = 60 * ((b - r) / delta + 2);
-            break;
-
-          default:
-            h = 60 * ((r - g) / delta + 4);
-            break;
+          case r: h = 60 * (((g - b) / delta) % 6); break;
+          case g: h = 60 * ((b - r) / delta + 2); break;
+          default: h = 60 * ((r - g) / delta + 4); break;
         }
       }
 
       if (h < 0) h += 360;
 
-      return {
-        h,
-        s: s * 100,
-        l: l * 100
-      };
+      return { h, s: s * 100, l: l * 100 };
     }
 
-    // Asigna descripciones según el color estimado.
     function describeTone(rgb) {
       const { h, s, l } = rgbToHsl(rgb);
-
       let base;
 
       if (s < 10) {
@@ -436,7 +315,6 @@
       }
 
       let modifier = "";
-
       if (s >= 55) modifier = " intenso";
       else if (s < 20) modifier = " apagado";
 
@@ -445,9 +323,7 @@
 
     function median(values) {
       if (!values.length) return null;
-
       values.sort((a, b) => a - b);
-
       const middle = Math.floor(values.length / 2);
 
       return values.length % 2
@@ -455,8 +331,6 @@
         : (values[middle - 1] + values[middle]) / 2;
     }
 
-    // Estima el color usando zonas centrales del rostro,
-    // descartando píxeles demasiado oscuros, claros o saturados.
     function sampleSkinTone(box) {
       const x = box.originX;
       const y = box.originY;
@@ -474,35 +348,19 @@
       for (const region of regions) {
         const left = clamp(Math.floor(region.x), 0, canvas.width - 1);
         const top = clamp(Math.floor(region.y), 0, canvas.height - 1);
-        const right = clamp(
-          Math.ceil(region.x + region.w),
-          left + 1,
-          canvas.width
-        );
-        const bottom = clamp(
-          Math.ceil(region.y + region.h),
-          top + 1,
-          canvas.height
-        );
+        const right = clamp(Math.ceil(region.x + region.w), left + 1, canvas.width);
+        const bottom = clamp(Math.ceil(region.y + region.h), top + 1, canvas.height);
 
         const width = right - left;
         const height = bottom - top;
-
         if (width <= 0 || height <= 0) continue;
 
-        const data = ctx.getImageData(
-          left, top, width, height
-        ).data;
-
-        const step = Math.max(
-          1,
-          Math.floor(Math.sqrt((width * height) / 450))
-        );
+        const data = ctx.getImageData(left, top, width, height).data;
+        const step = Math.max(1, Math.floor(Math.sqrt((width * height) / 450)));
 
         for (let py = 0; py < height; py += step) {
           for (let px = 0; px < width; px += step) {
             const i = (py * width + px) * 4;
-
             const r = data[i];
             const g = data[i + 1];
             const b = data[i + 2];
@@ -522,7 +380,6 @@
       }
 
       if (channels[0].length < 8) return null;
-
       return channels.map(median);
     }
 
@@ -578,15 +435,10 @@
           minDetectionConfidence: 0.5
         });
 
-        detectorReady = true;
         return true;
       } catch (error) {
         console.error(error);
-
-        setStatus(
-          "No se pudo cargar el detector. Revisá tu conexión a internet e intentá nuevamente."
-        );
-
+        setStatus("No se pudo cargar el detector. Revisá tu conexión a internet e intentá nuevamente.");
         return false;
       }
     }
@@ -597,9 +449,7 @@
         return;
       }
 
-      if (selectedImage) {
-        URL.revokeObjectURL(selectedImage);
-      }
+      if (selectedImage) URL.revokeObjectURL(selectedImage);
 
       selectedImage = URL.createObjectURL(file);
       preview.src = selectedImage;
@@ -608,7 +458,6 @@
         previewArea.style.display = "block";
         $("results").style.display = "none";
         $("people").replaceChildren();
-
         setStatus("Foto cargada. Tocá «Analizar foto» para continuar.");
       };
 
@@ -617,17 +466,9 @@
       };
     }
 
-    $("cameraButton").addEventListener("click", () => {
-      cameraInput.click();
-    });
-
-    $("galleryButton").addEventListener("click", () => {
-      galleryInput.click();
-    });
-
-    $("changeButton").addEventListener("click", () => {
-      galleryInput.click();
-    });
+    $("cameraButton").addEventListener("click", () => cameraInput.click());
+    $("galleryButton").addEventListener("click", () => galleryInput.click());
+    $("changeButton").addEventListener("click", () => galleryInput.click());
 
     cameraInput.addEventListener("change", event => {
       loadImage(event.target.files[0]);
@@ -655,22 +496,13 @@
         const maxDimension = 1800;
         const scale = Math.min(
           1,
-          maxDimension / Math.max(
-            preview.naturalWidth,
-            preview.naturalHeight
-          )
+          maxDimension / Math.max(preview.naturalWidth, preview.naturalHeight)
         );
 
         canvas.width = Math.round(preview.naturalWidth * scale);
         canvas.height = Math.round(preview.naturalHeight * scale);
 
-        ctx.drawImage(
-          preview,
-          0,
-          0,
-          canvas.width,
-          canvas.height
-        );
+        ctx.drawImage(preview, 0, 0, canvas.width, canvas.height);
 
         const detections = detector.detect(canvas).detections || [];
 
@@ -678,71 +510,49 @@
         $("results").style.display = "block";
 
         if (detections.length === 0) {
-          setStatus(
-            "No se detectaron rostros. Probá con una foto frontal, bien iluminada y con los rostros visibles."
-          );
-
+          setStatus("No se detectaron rostros. Probá con una foto frontal, bien iluminada y con los rostros visibles.");
           $("people").innerHTML =
             '<p class="empty">No se encontraron personas para analizar.</p>';
-
           return;
         }
 
-        // Ordenar de izquierda a derecha para numerar los rostros.
         detections.sort((a, b) =>
           a.boundingBox.originX - b.boundingBox.originX
         );
 
-        setStatus(
-          `Se detectaron ${detections.length} rostro(s).`
-        );
+        setStatus(`Se detectaron ${detections.length} rostro(s).`);
 
         detections.forEach((detection, index) => {
           const box = detection.boundingBox;
-
           const rgb = sampleSkinTone(box);
 
           ctx.save();
           ctx.strokeStyle = "#8de3d4";
           ctx.lineWidth = Math.max(2, canvas.width / 350);
-
-          ctx.strokeRect(
-            box.originX,
-            box.originY,
-            box.width,
-            box.height
-          );
+          ctx.strokeRect(box.originX, box.originY, box.width, box.height);
 
           ctx.fillStyle = "#8de3d4";
           ctx.font = `bold ${Math.max(14, canvas.width / 45)}px sans-serif`;
-
           ctx.fillText(
             `Persona ${index + 1}`,
             box.originX,
             Math.max(18, box.originY - 7)
           );
-
           ctx.restore();
 
           renderPerson(index, rgb);
         });
       } catch (error) {
         console.error(error);
-
-        setStatus(
-          "Ocurrió un error al analizar la foto. Intentá con otra imagen."
-        );
+        setStatus("Ocurrió un error al analizar la foto. Intentá con otra imagen.");
       } finally {
         analyzeButton.disabled = false;
         analyzeButton.textContent = "Analizar foto";
       }
     });
 
-    // Preparar el detector mientras se elige una imagen.
     initDetector().then(ready => {
-      if (ready) {
-        setStatus("Listo. Elegí una foto para empezar.");
-      }
+      if (ready) setStatus("Listo. Elegí una foto para empezar.");
     });
   </script>
 </body>
