@@ -1,61 +1,20 @@
+
 <!doctype html>
 <html lang="es">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>TonoLab — medidor de tono de piel</title>
 <style>
-:root{--bg:#10131b;--panel:#191e29;--primary:#d9b18b;--secondary:#30394b;--text:#f5f3f0;--muted:#aeb7c8;--border:#343c4c}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,sans-serif}
-.app{max-width:920px;margin:auto;padding:24px 16px 48px}
-.eyebrow{color:#e5c5a6;font-size:12px;letter-spacing:.18em;font-weight:800}
-.head{display:flex;align-items:center;justify-content:space-between;gap:12px}
-.mark{font-size:24px;font-weight:850;letter-spacing:-.04em}
-.pill{border:1px solid var(--border);border-radius:99px;padding:7px 11px;color:var(--muted);font-size:12px}
-h1{font-size:clamp(30px,6vw,48px);line-height:1.04;letter-spacing:-.045em;margin:26px 0 12px}
-p{color:var(--muted);line-height:1.55}
-.layout{display:grid;grid-template-columns:1.05fr .95fr;gap:16px;margin-top:22px}
-.panel{background:var(--panel);border:1px solid var(--border);border-radius:22px;padding:18px;min-width:0}
-.camera{position:relative;background:#090b10;border-radius:15px;overflow:hidden;aspect-ratio:4/3;display:grid;place-items:center}
-.camera video,.camera canvas{width:100%;height:100%;object-fit:cover}
-.camera video{display:none}
-.placeholder{text-align:center;padding:24px;color:var(--muted)}
-.target{position:absolute;width:44%;height:35%;border:2px solid #fff9;border-radius:50%;box-shadow:0 0 0 999px #0002;pointer-events:none;display:none}
-.buttons{display:flex;gap:9px;flex-wrap:wrap;margin-top:13px}
-.btn{border:0;border-radius:12px;padding:12px 15px;font-weight:750;cursor:pointer;background:var(--primary);color:#21170f}
-.btn.secondary{background:var(--secondary);color:var(--text);border:1px solid var(--border)}
-.btn:disabled{opacity:.5;cursor:not-allowed}
-.small{font-size:12px;color:var(--muted)}
-.result{display:flex;gap:14px;align-items:center;margin:14px 0}
-.swatch{width:90px;height:90px;border-radius:18px;border:1px solid #ffffff30;flex-shrink:0}
-.result h2{margin:0 0 5px;font-size:23px}
-.hex{font-family:ui-monospace,monospace;color:#d8c2ad}
-.meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-.tag{background:#252c39;border:1px solid var(--border);border-radius:99px;padding:6px 9px;font-size:12px;color:#e3e6ec}
-.scale{display:grid;gap:6px;margin-top:12px}
-.tone{display:grid;grid-template-columns:22px 1fr 52px;gap:9px;align-items:center;border-radius:9px;padding:5px 7px;color:var(--text);font-size:12px}
-.tone.active{outline:2px solid #f0d4b5;background:#ffffff0d}
-.mini{height:19px;border-radius:5px}
-.foot{margin-top:18px;border-top:1px solid var(--border);padding-top:13px}
-.notice{font-size:12px;color:#c4ccda;background:#202633;border-radius:12px;padding:12px;margin-top:12px}
-.hidden{display:none!important}
-.people{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-top:12px}
-.person{display:grid;grid-template-columns:54px 1fr;gap:10px;align-items:start;padding:12px;border:1px solid var(--border);border-radius:14px;background:#141923}
-.person .swatch{width:54px;height:54px;border-radius:10px}
-.person b{display:block;margin-bottom:4px}
-@media(max-width:680px){.layout{grid-template-columns:1fr}.app{padding:18px 12px 34px}.panel{padding:14px}.swatch{width:78px;height:78px}}
+:root{--bg:#10131b;--panel:#191e29;--primary:#d9b18b;--secondary:#30394b;--text:#f5f3f0;--muted:#aeb7c8;--border:#343c4c}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,sans-serif}.app{max-width:920px;margin:auto;padding:24px 16px 48px}.eyebrow{color:#e5c5a6;font-size:12px;letter-spacing:.18em;font-weight:800}.head{display:flex;align-items:center;justify-content:space-between;gap:12px}.mark{font-size:24px;font-weight:850;letter-spacing:-.04em}.pill{border:1px solid var(--border);border-radius:99px;padding:7px 11px;color:var(--muted);font-size:12px}h1{font-size:clamp(30px,6vw,48px);line-height:1.04;letter-spacing:-.045em;margin:26px 0 12px}p{color:var(--muted);line-height:1.55}.layout{display:grid;grid-template-columns:1.05fr .95fr;gap:16px;margin-top:22px}.panel{background:var(--panel);border:1px solid var(--border);border-radius:22px;padding:18px;min-width:0}.camera{position:relative;background:#090b10;border-radius:15px;overflow:hidden;aspect-ratio:4/3;display:grid;place-items:center}.camera video,.camera canvas{width:100%;height:100%;object-fit:cover}.camera video{display:none}.placeholder{text-align:center;padding:24px;color:var(--muted)}.target{position:absolute;width:44%;height:35%;border:2px solid #fff9;border-radius:50%;box-shadow:0 0 0 999px #0002;pointer-events:none;display:none}.buttons{display:flex;gap:9px;flex-wrap:wrap;margin-top:13px}.btn{border:0;border-radius:12px;padding:12px 15px;font-weight:750;cursor:pointer;background:var(--primary);color:#21170f}.btn.secondary{background:var(--secondary);color:var(--text);border:1px solid var(--border)}.btn:disabled{opacity:.5;cursor:not-allowed}.small{font-size:12px;color:var(--muted)}.result{display:flex;gap:14px;align-items:center;margin:14px 0}.swatch{width:90px;height:90px;border-radius:18px;border:1px solid #ffffff30;flex-shrink:0}.result h2{margin:0 0 5px;font-size:23px}.hex{font-family:ui-monospace,monospace;color:#d8c2ad}.meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.tag{background:#252c39;border:1px solid var(--border);border-radius:99px;padding:6px 9px;font-size:12px;color:#e3e6ec}.scale{display:grid;gap:6px;margin-top:12px}.tone{display:grid;grid-template-columns:22px 1fr 52px;gap:9px;align-items:center;border-radius:9px;padding:5px 7px;color:var(--text);font-size:12px}.tone.active{outline:2px solid #f0d4b5;background:#ffffff0d}.mini{height:19px;border-radius:5px}.foot{margin-top:18px;border-top:1px solid var(--border);padding-top:13px}.notice{font-size:12px;color:#c4ccda;background:#202633;border-radius:12px;padding:12px;margin-top:12px}.hidden{display:none!important}.people{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-top:12px}.person{display:grid;grid-template-columns:54px 1fr;gap:10px;align-items:start;padding:12px;border:1px solid var(--border);border-radius:14px;background:#141923}.person .swatch{width:54px;height:54px;border-radius:10px}.person b{display:block;margin-bottom:4px}@media(max-width:680px){.layout{grid-template-columns:1fr}.app{padding:18px 12px 34px}.panel{padding:14px}.swatch{width:78px;height:78px}}
 </style>
 </head>
 <body>
 <main class="app">
 <div class="head">
-<div>
-<div class="eyebrow">COLORIMETRÍA · PROTOTIPO</div>
-<div class="mark">TonoLab<span style="color:#d9b18b">.</span></div>
+  <div><div class="eyebrow">COLORIMETRÍA · PROTOTIPO</div><div class="mark">TonoLab<span style="color:#d9b18b">.</span></div></div>
+  <span class="pill">20 tonos de referencia</span>
 </div>
-<span class="pill">20 tonos de referencia</span>
-</div>
-
 <h1>Encontrá el tono<br>más parecido a tu piel.</h1>
 <p>Usá la cámara o subí una foto. TonoLab toma una muestra de color y busca el tono de referencia más cercano, con una estimación de subtono.</p>
 
@@ -63,20 +22,20 @@ p{color:var(--muted);line-height:1.55}
 <section class="panel">
 <h3 style="margin:0 0 12px">01 / Captura</h3>
 <div class="camera" id="camera">
-<video id="video" autoplay playsinline muted></video>
-<canvas id="canvas" class="hidden"></canvas>
-<div class="placeholder" id="placeholder">
-<div style="font-size:35px;margin-bottom:8px">◉</div>
-<b>La cámara aparecerá acá</b>
-<p class="small">Buscá luz natural indirecta y evitá filtros.</p>
-</div>
-<div class="target" id="target"></div>
+  <video id="video" autoplay playsinline muted></video>
+  <canvas id="canvas" class="hidden"></canvas>
+  <div class="placeholder" id="placeholder">
+    <div style="font-size:35px;margin-bottom:8px">◉</div>
+    <b>La cámara aparecerá acá</b>
+    <p class="small">Buscá luz natural indirecta y evitá filtros.</p>
+  </div>
+  <div class="target" id="target"></div>
 </div>
 <div class="buttons">
-<button class="btn" id="start">Activar cámara</button>
-<button class="btn secondary" id="capture" disabled>Analizar piel</button>
-<button class="btn secondary" id="choosePhoto" type="button">Subir foto</button>
-<input id="upload" type="file" accept="image/*" style="position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;pointer-events:none" aria-label="Elegir una foto">
+  <button class="btn" id="start">Activar cámara</button>
+  <button class="btn secondary" id="capture" disabled>Analizar piel</button>
+  <button class="btn secondary" id="choosePhoto" type="button">Subir foto</button>
+  <input id="upload" type="file" accept="image/*" style="position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;pointer-events:none" aria-label="Elegir una foto">
 </div>
 <p class="small" id="status">La cámara requiere permiso del navegador. Si no funciona, podés subir una foto.</p>
 <div class="notice">Consejo: usá una zona de piel sin maquillaje, sin sombra directa y con luz blanca o natural. La cámara puede alterar los colores.</div>
@@ -85,22 +44,19 @@ p{color:var(--muted);line-height:1.55}
 <section class="panel">
 <h3 style="margin:0 0 12px">02 / Resultado estimado</h3>
 <div class="result">
-<div class="swatch" id="resultSwatch" style="background:#cca080"></div>
-<div>
-<h2 id="resultName">Beige tostado</h2>
-<div class="hex" id="resultHex">#CCA080</div>
-<div class="meta">
-<span class="tag" id="resultNum">Tono 9 / 20</span>
-<span class="tag" id="undertone">Subtono estimado: cálido</span>
-</div>
-</div>
+  <div class="swatch" id="resultSwatch" style="background:#cca080"></div>
+  <div>
+    <h2 id="resultName">Beige tostado</h2>
+    <div class="hex" id="resultHex">#CCA080</div>
+    <div class="meta">
+      <span class="tag" id="resultNum">Tono 9 / 20</span>
+      <span class="tag" id="undertone">Subtono estimado: cálido</span>
+    </div>
+  </div>
 </div>
 <p id="resultDesc">El resultado se actualizará cuando analices una imagen.</p>
-<div style="display:flex;justify-content:space-between;align-items:center;margin-top:20px">
-<b>Escala completa</b><span class="small">oscuro → claro</span>
-</div>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-top:20px"><b>Escala completa</b><span class="small">oscuro → claro</span></div>
 <div class="scale" id="scale"></div>
-<div id="people" class="people"></div>
 </section>
 </div>
 
@@ -133,420 +89,371 @@ const tones=[
 ];
 
 const $=id=>document.getElementById(id);
-let stream=null,modelReady=false;
-
+let stream=null;
+let modelReady=false;
 const MODEL_URL='https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@master/weights';
 
-function rgb(hex){
-return [1,3,5].map(i=>parseInt(hex.slice(i,i+2),16));
-}
+function rgb(hex){return [1,3,5].map(i=>parseInt(hex.slice(i,i+2),16))}
+function distance(a,b){return Math.sqrt(a.reduce((s,v,i)=>s+(v-b[i])**2,0))}
 
 function renderScale(active=-1){
-$('scale').innerHTML=tones.map((t,i)=>`
-<div class="tone ${i===active?'active':''}">
-<span>${i+1}.</span>
-<div style="display:flex;align-items:center;gap:8px">
-<div class="mini" style="background:${t[1]};width:32px;flex-shrink:0"></div>
-<span>${t[0]}</span>
-</div>
-<span style="text-align:right;color:#bdc5d2">${t[1]}</span>
-</div>`).join('');
+  $('scale').innerHTML=tones.map((t,i)=>`<div class="tone ${i===active?'active':''}" id="tone${i}"><span>${i+1}.</span><div style="display:flex;align-items:center;gap:8px"><div class="mini" style="background:${t[1]};width:32px;flex-shrink:0"></div><span>${t[0]}</span></div><span style="text-align:right;color:#bdc5d2">${t[1]}</span></div>`).join('');
+}
+renderScale();
+
+function analyze(r,g,b){
+  let best=0,dist=Infinity;
+  tones.forEach((t,i)=>{
+    let d=distance([r,g,b],rgb(t[1]));
+    if(d<dist){dist=d;best=i}
+  });
+  const t=tones[best];
+  $('resultSwatch').style.background=`rgb(${r},${g},${b})`;
+  $('resultName').textContent=t[0];
+  $('resultHex').textContent='#'+[r,g,b].map(v=>Math.round(v).toString(16).padStart(2,'0')).join('').toUpperCase();
+  $('resultNum').textContent=`Tono de referencia ${best+1} / 20`;
+  $('undertone').textContent='Subtono de la referencia: '+t[2];
+  $('resultDesc').textContent=`El color captado se parece más a «${t[0]}» de esta escala. La comparación puede variar según la luz, el balance de blancos y la cámara.`;
+  renderScale(best);
 }
 
-// Comparación de colores en Lab: se parece más a cómo percibimos
-// diferencias de color que una distancia RGB sencilla.
 function linear(v){
-v/=255;
-return v<=.04045?v/12.92:Math.pow((v+.055)/1.055,2.4);
+  v/=255;
+  return v<=.04045?v/12.92:Math.pow((v+.055)/1.055,2.4);
 }
-
-function toLab(values){
-const [r,g,b]=values.map(linear);
-const x=(r*.4124564+g*.3575761+b*.1804375)/.95047;
-const y=r*.2126729+g*.7151522+b*.0721750;
-const z=(r*.0193339+g*.1191920+b*.9503041)/1.08883;
-const f=t=>t>.008856?Math.cbrt(t):7.787037*t+16/116;
-return [116*f(y)-16,500*(f(x)-f(y)),200*(f(y)-f(z))];
+function toLab(rgb){
+  const [r,g,b]=rgb.map(linear);
+  let x=(r*.4124564+g*.3575761+b*.1804375)/.95047;
+  let y=(r*.2126729+g*.7151522+b*.072175)/1;
+  let z=(r*.0193339+g*.119192+b*.9503041)/1.08883;
+  const f=t=>t>.008856?Math.cbrt(t):7.787037*t+16/116;
+  return [116*f(y)-16,500*(f(x)-f(y)),200*(f(y)-f(z))];
 }
-
 const toneLabs=tones.map(t=>toLab(rgb(t[1])));
 
+function med(a){
+  a.sort((x,y)=>x-y);
+  return a[Math.floor(a.length/2)];
+}
+
+/* Mediana exacta, incluida la media de los dos valores centrales. */
 function median(values){
-const sorted=[...values].sort((a,b)=>a-b);
-const mid=Math.floor(sorted.length/2);
-return sorted.length%2?sorted[mid]:(sorted[mid-1]+sorted[mid])/2;
+  const sorted=[...values].sort((a,b)=>a-b);
+  const mid=Math.floor(sorted.length/2);
+  return sorted.length%2
+    ? sorted[mid]
+    : (sorted[mid-1]+sorted[mid])/2;
 }
 
-function classifyColor(values){
-const lab=toLab(values);
-let best=0,bestDistance=Infinity;
-
-toneLabs.forEach((tone,i)=>{
-const d=Math.sqrt(
-(lab[0]-tone[0])**2+
-1.2*(lab[1]-tone[1])**2+
-(lab[2]-tone[2])**2
-);
-if(d<bestDistance){bestDistance=d;best=i;}
-});
-
-const [r,g,b]=values;
-let undertone='neutro';
-if(r-g>18&&r-b>25)undertone='cálido';
-else if(b-r>8)undertone='frío';
-else if(g-r>5&&g-b>5)undertone='oliva';
-
-return {
-rgb:values,
-tone:best,
-undertone,
-hex:'#'+values.map(v=>Math.round(v).toString(16).padStart(2,'0')).join('').toUpperCase()
-};
+function classifyColor(rgbv){
+  const lab=toLab(rgbv);
+  let best=0,dist=Infinity;
+  toneLabs.forEach((t,i)=>{
+    let d=Math.sqrt((lab[0]-t[0])**2+1.2*(lab[1]-t[1])**2+(lab[2]-t[2])**2);
+    if(d<dist){dist=d;best=i}
+  });
+  let [r,g,b]=rgbv,sub='neutro';
+  if(r-g>18&&r-b>25)sub='cálido';
+  else if(b-r>8)sub='frío';
+  else if(g-r>5&&g-b>5)sub='oliva';
+  return {
+    rgb:rgbv,
+    tone:best,
+    undertone:sub,
+    hex:'#'+rgbv.map(v=>Math.round(v).toString(16).padStart(2,'0')).join('').toUpperCase()
+  };
 }
 
-function showResult(sample,description){
-const tone=tones[sample.tone];
-$('resultSwatch').style.background=sample.hex;
-$('resultName').textContent=tone[0];
-$('resultHex').textContent=sample.hex;
-$('resultNum').textContent=`Tono ${sample.tone+1} / 20`;
-$('undertone').textContent='Subtono estimado: '+sample.undertone;
-$('resultDesc').textContent=description;
-renderScale(sample.tone);
-}
+/* Nueva detección: toma muestras de frente y mejillas. */
+function sampleSkin(ctx,face){
+  const {x,y,width,height}=face;
+  const regions=[
+    [0.50,0.32,0.13,0.09],
+    [0.34,0.53,0.13,0.12],
+    [0.66,0.53,0.13,0.12],
+    [0.50,0.62,0.10,0.07]
+  ];
+  const pixels=[];
 
-/*
- * CAMBIO PRINCIPAL:
- * analiza frente y mejillas en varias zonas, descarta píxeles
- * demasiado oscuros o reflejados y combina los colores con medianas.
- */
-function sampleFace(ctx,box,W,H){
-const regions=[
-[.50,.32,.16,.09], // frente
-[.34,.49,.15,.13], // mejilla izquierda
-[.66,.49,.15,.13], // mejilla derecha
-[.39,.60,.11,.07], // zona inferior de mejilla
-[.61,.60,.11,.07]
-];
+  for(const [cx,cy,rw,rh] of regions){
+    const sx=Math.max(0,Math.round(x+width*(cx-rw/2)));
+    const sy=Math.max(0,Math.round(y+height*(cy-rh/2)));
+    const sw=Math.max(1,Math.round(width*rw));
+    const sh=Math.max(1,Math.round(height*rh));
 
-const pixels=[];
+    try{
+      const data=ctx.getImageData(sx,sy,sw,sh).data;
+      for(let i=0;i<data.length;i+=4){
+        const r=data[i],g=data[i+1],b=data[i+2];
+        const max=Math.max(r,g,b);
+        const min=Math.min(r,g,b);
+        const brightness=(r+g+b)/3;
 
-for(const [cx,cy,rw,rh] of regions){
-const x=Math.max(0,Math.round(box.x+box.width*(cx-rw/2)));
-const y=Math.max(0,Math.round(box.y+box.height*(cy-rh/2)));
-const w=Math.max(1,Math.round(box.width*rw));
-const h=Math.max(1,Math.round(box.height*rh));
+        if(
+          brightness<35 ||
+          max>248 ||
+          max-min<8 ||
+          r<g*0.88 ||
+          r<b*0.88
+        ) continue;
 
-if(x+w>W||y+h>H)continue;
+        pixels.push([r,g,b]);
+      }
+    }catch{
+      // Ignora una región que no se pueda leer.
+    }
+  }
 
-let data;
-try{
-data=ctx.getImageData(x,y,w,h).data;
-}catch{
-continue;
-}
+  if(pixels.length<8)return null;
 
-for(let i=0;i<data.length;i+=4){
-const r=data[i],g=data[i+1],b=data[i+2];
-const max=Math.max(r,g,b),min=Math.min(r,g,b);
-const brightness=(r+g+b)/3;
-
-// No descartamos la piel simplemente por ser oscura.
-// Solo excluimos sombras casi negras, reflejos y píxeles extremos.
-if(
-brightness<25||
-brightness>250||
-(max-min<5&&brightness>242)||
-(r<g*.72&&g>b*1.12)||
-(b>r*1.45&&b>100)
-)continue;
-
-pixels.push([r,g,b]);
-}
-}
-
-if(pixels.length<8)return null;
-
-// Mediana por canal: reduce la influencia de píxeles aislados.
-const sampled=[
-median(pixels.map(p=>p[0])),
-median(pixels.map(p=>p[1])),
-median(pixels.map(p=>p[2]))
-];
-
-return classifyColor(sampled);
+  return [
+    median(pixels.map(p=>p[0])),
+    median(pixels.map(p=>p[1])),
+    median(pixels.map(p=>p[2]))
+  ].reduce((acc,value,i)=>{
+    acc[i]=value;
+    return acc;
+  },[]).length===3
+    ? classifyColor([
+        median(pixels.map(p=>p[0])),
+        median(pixels.map(p=>p[1])),
+        median(pixels.map(p=>p[2]))
+      ])
+    : null;
 }
 
 async function loadModels(){
-if(modelReady)return;
-if(!window.faceapi)throw Error('No se pudo cargar el detector. Revisá tu conexión.');
-$('status').textContent='Preparando detector de rostros…';
-
-await Promise.all([
-faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
-faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
-faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL)
-]);
-
-modelReady=true;
+  if(modelReady)return;
+  if(!window.faceapi)throw Error('No se pudo cargar el detector. Revisá tu conexión.');
+  $('status').textContent='Preparando detector de rostros…';
+  await Promise.all([
+    faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+    faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
+    faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL)
+  ]);
+  modelReady=true;
 }
 
 function descDist(a,b){
-let dot=0,aa=0,bb=0;
-for(let i=0;i<a.length;i++){
-dot+=a[i]*b[i];
-aa+=a[i]*a[i];
-bb+=b[i]*b[i];
-}
-return 1-dot/(Math.sqrt(aa)*Math.sqrt(bb));
+  let dot=0,aa=0,bb=0;
+  for(let i=0;i<a.length;i++){
+    dot+=a[i]*b[i];
+    aa+=a[i]*a[i];
+    bb+=b[i]*b[i];
+  }
+  return 1-dot/(Math.sqrt(aa)*Math.sqrt(bb));
 }
 
 function groupFaces(faces){
-let groups=[];
-for(const f of faces){
-let found=null,bd=Infinity;
-for(const g of groups){
-let d=descDist(f.descriptor,g.center);
-if(d<bd){bd=d;found=g;}
-}
-if(found&&bd<.36){
-found.members.push(f);
-let n=found.members.length;
-found.center=found.center.map((v,i)=>(v*(n-1)+f.descriptor[i])/n);
-}else{
-groups.push({members:[f],center:Array.from(f.descriptor)});
-}
-}
-return groups;
+  let groups=[];
+  for(const f of faces){
+    let found=null,bd=Infinity;
+    for(const g of groups){
+      let d=descDist(f.descriptor,g.center);
+      if(d<bd){bd=d;found=g}
+    }
+    if(found&&bd<.36){
+      found.members.push(f);
+      let n=found.members.length;
+      found.center=found.center.map((v,i)=>(v*(n-1)+f.descriptor[i])/n);
+    }else{
+      groups.push({members:[f],center:Array.from(f.descriptor)});
+    }
+  }
+  return groups;
 }
 
 async function analyzeSource(source){
-await loadModels();
-$('status').textContent='Detectando rostros y analizando colores…';
+  await loadModels();
+  $('status').textContent='Detectando rostros y comparando apariciones…';
+  const opts=new faceapi.TinyFaceDetectorOptions({inputSize:416,scoreThreshold:.35});
+  const det=await faceapi.detectAllFaces(source,opts).withFaceLandmarks().withFaceDescriptors();
 
-const opts=new faceapi.TinyFaceDetectorOptions({
-inputSize:416,
-scoreThreshold:.35
-});
+  if(!det.length){
+    $('people').innerHTML='<p class="small">No se detectaron rostros. Probá con una foto más nítida y con las caras más grandes.</p>';
+    $('status').textContent='No se detectaron rostros.';
+    return;
+  }
 
-const det=await faceapi.detectAllFaces(source,opts)
-.withFaceLandmarks()
-.withFaceDescriptors();
+  const sw=source.videoWidth||source.naturalWidth;
+  const sh=source.videoHeight||source.naturalHeight;
+  const scale=Math.min(1,1500/Math.max(sw,sh));
+  const c=$('canvas');
+  const ctx=c.getContext('2d',{willReadFrequently:true});
+  c.width=Math.round(sw*scale);
+  c.height=Math.round(sh*scale);
+  ctx.drawImage(source,0,0,c.width,c.height);
 
-if(!det.length){
-$('people').innerHTML='<p class="small">No se detectaron rostros. Probá con una foto más nítida y con las caras más grandes.</p>';
-$('status').textContent='No se detectaron rostros.';
-return;
-}
+  const faces=det.map((d,i)=>{
+    const b=d.detection.box;
+    const box={x:b.x*scale,y:b.y*scale,width:b.width*scale,height:b.height*scale};
+    return {
+      n:i+1,
+      box,
+      descriptor:Array.from(d.descriptor),
+      sample:sampleSkin(ctx,box)
+    };
+  });
 
-const sw=source.videoWidth||source.naturalWidth;
-const sh=source.videoHeight||source.naturalHeight;
-const scale=Math.min(1,1500/Math.max(sw,sh));
-const c=$('canvas');
-const ctx=c.getContext('2d',{willReadFrequently:true});
+  faces.forEach(f=>{
+    ctx.strokeStyle='#d9b18b';
+    ctx.lineWidth=Math.max(2,c.width/500);
+    ctx.strokeRect(f.box.x,f.box.y,f.box.width,f.box.height);
+    ctx.fillStyle='#d9b18b';
+    ctx.font=`bold ${Math.max(15,c.width/48)}px system-ui`;
+    ctx.fillText(String(f.n),f.box.x+3,Math.max(18,f.box.y-5));
+  });
 
-c.width=Math.round(sw*scale);
-c.height=Math.round(sh*scale);
-ctx.drawImage(source,0,0,c.width,c.height);
+  c.style.display='block';
+  $('placeholder').classList.add('hidden');
+  $('video').style.display='none';
+  $('target').style.display='none';
 
-const faces=det.map((d,i)=>{
-const b=d.detection.box;
-const box={
-x:b.x*scale,
-y:b.y*scale,
-width:b.width*scale,
-height:b.height*scale
-};
-return {
-n:i+1,
-box,
-descriptor:Array.from(d.descriptor),
-sample:sampleFace(ctx,box,c.width,c.height)
-};
-});
+  let groups=groupFaces(faces);
+  groups.sort((a,b)=>Math.min(...a.members.map(f=>f.n))-Math.min(...b.members.map(f=>f.n)));
 
-// Dibujar los rectángulos después de analizar los píxeles.
-faces.forEach(f=>{
-ctx.strokeStyle='#d9b18b';
-ctx.lineWidth=Math.max(2,c.width/500);
-ctx.strokeRect(f.box.x,f.box.y,f.box.width,f.box.height);
-ctx.fillStyle='#d9b18b';
-ctx.font=`bold ${Math.max(15,c.width/48)}px system-ui`;
-ctx.fillText(String(f.n),f.box.x+3,Math.max(18,f.box.y-5));
-});
+  /* Crea la sección de personas si todavía no existe en el HTML original. */
+  let root=$('people');
+  if(!root){
+    root=document.createElement('section');
+    root.id='people';
+    root.className='panel';
+    root.style.marginTop='16px';
+    root.innerHTML='<h3 style="margin:0 0 12px">03 / Personas detectadas</h3>';
+    document.querySelector('.layout').after(root);
+  }
+  root.innerHTML='<h3 style="margin:0 0 12px">03 / Personas detectadas</h3>';
 
-c.classList.remove('hidden');
-c.style.display='block';
-$('placeholder').classList.add('hidden');
-$('video').style.display='none';
-$('target').style.display='none';
+  groups.forEach((g,i)=>{
+    const valid=g.members.filter(f=>f.sample);
+    let sample=null;
 
-const groups=groupFaces(faces);
-groups.sort((a,b)=>Math.min(...a.members.map(f=>f.n))-Math.min(...b.members.map(f=>f.n)));
+    if(valid.length){
+      sample=classifyColor([0,1,2].map(k=>median(valid.map(f=>f.sample.rgb[k]))));
+    }
 
-const root=$('people');
-root.innerHTML='';
+    const card=document.createElement('div');
+    card.className='person';
 
-groups.forEach((g,i)=>{
-const valid=g.members.filter(f=>f.sample);
-let sample=null;
+    const swatch=document.createElement('div');
+    swatch.className='swatch';
+    swatch.style.background=sample?sample.hex:'#30394b';
 
-if(valid.length){
-sample=classifyColor([
-median(valid.map(f=>f.sample.rgb[0])),
-median(valid.map(f=>f.sample.rgb[1])),
-median(valid.map(f=>f.sample.rgb[2]))
-]);
-}
+    const body=document.createElement('div');
+    const title=document.createElement('b');
+    title.textContent='Persona '+(i+1);
 
-const card=document.createElement('div');
-card.className='person';
+    const ids=document.createElement('div');
+    ids.className='small';
+    ids.textContent='Rostro(s): '+g.members.map(f=>f.n).join(', ');
 
-const swatch=document.createElement('div');
-swatch.className='swatch';
-swatch.style.background=sample?sample.hex:'#30394b';
+    const info=document.createElement('div');
+    info.className='small';
+    info.textContent=sample
+      ? `Tono ${sample.tone+1}: ${tones[sample.tone][0]} · ${sample.hex} · subtono ${sample.undertone}`
+      : 'No hubo suficientes píxeles útiles para estimar el tono.';
 
-const body=document.createElement('div');
-const title=document.createElement('b');
-title.textContent='Persona '+(i+1);
+    body.append(title,ids,info);
+    card.append(swatch,body);
+    root.append(card);
+  });
 
-const ids=document.createElement('div');
-ids.className='small';
-ids.textContent='Rostro(s): '+g.members.map(f=>f.n).join(', ');
+  const first=groups.find(g=>g.members.some(f=>f.sample));
+  if(first){
+    const samples=first.members.map(f=>f.sample).filter(Boolean);
+    const combined=classifyColor([0,1,2].map(k=>median(samples.map(s=>s.rgb[k]))));
 
-const info=document.createElement('div');
-info.className='small';
-info.textContent=sample
-?`Tono ${sample.tone+1}: ${tones[sample.tone][0]} · ${sample.hex} · subtono ${sample.undertone}`
-:'No hubo suficientes píxeles útiles para estimar el tono.';
+    $('resultSwatch').style.background=combined.hex;
+    $('resultName').textContent=tones[combined.tone][0];
+    $('resultHex').textContent=combined.hex;
+    $('resultNum').textContent=`Tono ${combined.tone+1} / 20`;
+    $('undertone').textContent='Subtono estimado: '+combined.undertone;
+    $('resultDesc').textContent='Estimación combinada de las apariciones agrupadas de la primera persona detectada.';
+    renderScale(combined.tone);
+  }
 
-body.append(title,ids,info);
-card.append(swatch,body);
-root.append(card);
-});
-
-const first=groups.find(g=>g.members.some(f=>f.sample));
-
-if(first){
-const samples=first.members.map(f=>f.sample).filter(Boolean);
-const combined=classifyColor([
-median(samples.map(s=>s.rgb[0])),
-median(samples.map(s=>s.rgb[1])),
-median(samples.map(s=>s.rgb[2]))
-]);
-
-showResult(
-combined,
-'Estimación combinada de las muestras de color de la primera persona detectada.'
-);
-}
-
-$('status').textContent=`Listo: ${faces.length} rostro(s), agrupados en ${groups.length} persona(s). La estimación puede variar según la iluminación.`;
+  $('status').textContent=`Listo: ${faces.length} rostro(s), agrupados en ${groups.length} persona(s). Las coincidencias son estimaciones automáticas, no identificación garantizada.`;
 }
 
 $('choosePhoto').onclick=()=>$('upload').click();
 
 $('upload').addEventListener('change',e=>{
-const f=e.target.files&&e.target.files[0];
-if(!f)return;
+  const f=e.target.files&&e.target.files[0];
+  if(!f)return;
 
-if(stream){
-stream.getTracks().forEach(t=>t.stop());
-stream=null;
-}
-$('capture').disabled=true;
+  if(stream){
+    stream.getTracks().forEach(t=>t.stop());
+    stream=null;
+  }
 
-const url=URL.createObjectURL(f);
-const img=new Image();
+  const url=URL.createObjectURL(f);
+  const img=new Image();
 
-img.onload=async()=>{
-$('video').style.display='none';
-$('canvas').style.display='block';
-$('canvas').classList.remove('hidden');
-$('placeholder').classList.add('hidden');
-$('target').style.display='none';
+  img.onload=()=>{
+    $('video').style.display='none';
+    $('canvas').style.display='block';
+    $('canvas').width=img.naturalWidth;
+    $('canvas').height=img.naturalHeight;
+    $('canvas').getContext('2d').drawImage(img,0,0);
+    $('placeholder').classList.add('hidden');
+    $('target').style.display='none';
+    $('capture').disabled=true;
+    $('status').textContent='Foto cargada. Analizando piel…';
+    URL.revokeObjectURL(url);
+    analyzeSource(img).catch(e=>{
+      console.error(e);
+      $('status').textContent='Error: '+e.message;
+    });
+  };
 
-try{
-await analyzeSource(img);
-}catch(error){
-$('status').textContent='Error: '+error.message;
-}finally{
-URL.revokeObjectURL(url);
-}
-};
+  img.onerror=()=>{
+    $('status').textContent='No se pudo abrir esa imagen.';
+    URL.revokeObjectURL(url);
+  };
 
-img.onerror=()=>{
-$('status').textContent='No se pudo abrir esa imagen.';
-URL.revokeObjectURL(url);
-};
-
-img.src=url;
+  img.src=url;
 });
 
 $('start').onclick=async()=>{
-try{
-if(!navigator.mediaDevices?.getUserMedia)
-throw Error('La cámara requiere una página HTTPS.');
+  try{
+    if(!navigator.mediaDevices?.getUserMedia)throw Error('La cámara requiere una página HTTPS.');
+    if(stream)stream.getTracks().forEach(t=>t.stop());
 
-if(stream)stream.getTracks().forEach(t=>t.stop());
+    stream=await navigator.mediaDevices.getUserMedia({
+      video:{facingMode:'user'},
+      audio:false
+    });
 
-$('status').textContent='Solicitando acceso a la cámara…';
-
-try{
-stream=await navigator.mediaDevices.getUserMedia({
-video:{facingMode:'user',width:{ideal:1280},height:{ideal:720}},
-audio:false
-});
-}catch{
-stream=await navigator.mediaDevices.getUserMedia({video:true,audio:false});
-}
-
-const video=$('video');
-video.srcObject=stream;
-video.style.display='block';
-$('canvas').style.display='none';
-$('placeholder').classList.add('hidden');
-$('target').style.display='block';
-
-await new Promise((resolve,reject)=>{
-if(video.readyState>=1&&video.videoWidth)return resolve();
-video.onloadedmetadata=resolve;
-video.onerror=()=>reject(Error('No se pudo iniciar el video.'));
-});
-
-await video.play();
-$('capture').disabled=false;
-$('status').textContent='Cámara activa. Centrá la cara y tocá “Analizar piel”.';
-
-}catch(e){
-$('status').textContent='No se pudo activar la cámara: '+e.message+' También podés subir una foto.';
-}
+    $('video').srcObject=stream;
+    $('video').style.display='block';
+    $('canvas').style.display='none';
+    $('placeholder').classList.add('hidden');
+    $('target').style.display='block';
+    $('capture').disabled=false;
+    $('status').textContent='Cámara activa. Centrá la cara y tocá “Analizar piel”.';
+  }catch(e){
+    $('status').textContent='No se pudo activar la cámara: '+e.message+' También podés subir una foto.';
+  }
 };
 
 $('capture').onclick=async()=>{
-const v=$('video');
-if(!v.videoWidth){
-$('status').textContent='Esperá a que la cámara termine de iniciar.';
-return;
-}
+  const v=$('video');
+  if(!v.videoWidth){
+    $('status').textContent='Esperá a que la cámara termine de iniciar.';
+    return;
+  }
 
-$('capture').disabled=true;
-
-try{
-await analyzeSource(v);
-}catch(e){
-console.error(e);
-$('status').textContent='Error al analizar: '+e.message;
-}finally{
-$('capture').disabled=!stream;
-}
+  try{
+    await analyzeSource(v);
+  }catch(e){
+    console.error(e);
+    $('status').textContent='Error al analizar: '+e.message;
+  }
 };
 
 window.addEventListener('pagehide',()=>{
-if(stream)stream.getTracks().forEach(t=>t.stop());
+  if(stream)stream.getTracks().forEach(t=>t.stop());
 });
-
-renderScale();
 </script>
 </body>
 </html>
