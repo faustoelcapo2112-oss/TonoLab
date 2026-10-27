@@ -2,677 +2,748 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TonoLab</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TonoLab</title>
 
-<style>
-:root {
-  --bg: #10131c;
-  --card: #1b2030;
-  --accent: #8de3d4;
-  --text: #f2f5f8;
-  --muted: #aab3c5;
-}
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-* {
-  box-sizing: border-box;
-}
+    body {
+      margin: 0;
+      padding: 24px 16px;
+      background: #10131c;
+      color: #f1f3fa;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
 
-body {
-  margin: 0;
-  padding: 20px;
-  background: var(--bg);
-  color: var(--text);
-  font-family: system-ui, sans-serif;
-}
+    .app {
+      max-width: 680px;
+      margin: 0 auto;
+    }
 
-main {
-  max-width: 680px;
-  margin: auto;
-}
+    header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 24px;
+      font-size: 23px;
+      font-weight: 750;
+      letter-spacing: -0.7px;
+    }
 
-h1 {
-  font-size: 28px;
-  margin-bottom: 8px;
-}
+    .logo {
+      color: #8de3d4;
+      font-size: 28px;
+    }
 
-p {
-  color: var(--muted);
-  line-height: 1.5;
-}
+    .card {
+      background: #1b2030;
+      border: 1px solid #2b3245;
+      border-radius: 18px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
 
-.card {
-  background: var(--card);
-  padding: 18px;
-  border-radius: 16px;
-  margin-top: 16px;
-}
+    h2 {
+      font-size: 17px;
+      margin: 0 0 8px;
+    }
 
-button {
-  background: var(--accent);
-  color: #10131c;
-  border: 0;
-  border-radius: 10px;
-  padding: 12px 16px;
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
-}
+    .subtitle {
+      color: #a5adc1;
+      font-size: 14px;
+      line-height: 1.5;
+      margin: 0 0 18px;
+    }
 
-button.secondary {
-  background: #30394d;
-  color: var(--text);
-}
+    .buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
 
-button:disabled {
-  opacity: .5;
-  cursor: not-allowed;
-}
+    button,
+    .file-button {
+      border: 0;
+      border-radius: 12px;
+      padding: 14px 12px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+      font-family: inherit;
+    }
 
-.actions {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-top: 14px;
-}
+    .primary {
+      background: #8de3d4;
+      color: #101820;
+    }
 
-img, canvas {
-  display: block;
-  width: 100%;
-  height: auto;
-  border-radius: 12px;
-  margin-top: 12px;
-}
+    .secondary {
+      background: #293146;
+      color: #f1f3fa;
+      border: 1px solid #3a435a;
+    }
 
-.hidden {
-  display: none !important;
-}
+    button:disabled {
+      opacity: 0.5;
+      cursor: wait;
+    }
 
-.status {
-  color: var(--accent);
-  font-size: 14px;
-  margin-top: 12px;
-}
+    input[type="file"] {
+      display: none;
+    }
 
-.person {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: #252c3e;
-  border-radius: 12px;
-  padding: 12px;
-  margin-top: 10px;
-}
+    #previewArea {
+      display: none;
+      margin-top: 18px;
+    }
 
-.swatch {
-  width: 44px;
-  height: 44px;
-  flex-shrink: 0;
-  border-radius: 10px;
-  border: 1px solid #ffffff30;
-}
+    #preview {
+      display: block;
+      width: 100%;
+      max-height: 480px;
+      object-fit: contain;
+      background: #10131c;
+      border-radius: 12px;
+    }
 
-.person p {
-  margin: 3px 0 0;
-  font-size: 13px;
-}
+    .preview-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+    }
 
-small {
-  color: var(--muted);
-}
-</style>
+    .preview-actions button {
+      flex: 1;
+    }
+
+    #status {
+      color: #a5adc1;
+      font-size: 13px;
+      line-height: 1.5;
+      margin-top: 14px;
+    }
+
+    #results {
+      display: none;
+    }
+
+    #canvas {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 12px;
+      background: #10131c;
+    }
+
+    .person {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 0;
+      border-bottom: 1px solid #30374a;
+    }
+
+    .person:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .swatch {
+      width: 48px;
+      height: 48px;
+      flex-shrink: 0;
+      border-radius: 13px;
+      border: 1px solid #ffffff24;
+    }
+
+    .person strong {
+      display: block;
+      font-size: 15px;
+      line-height: 1.4;
+      text-transform: capitalize;
+    }
+
+    .person p {
+      margin: 5px 0 0;
+      color: #a5adc1;
+      font-size: 13px;
+    }
+
+    .empty {
+      color: #a5adc1;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .footnote {
+      color: #858da3;
+      font-size: 12px;
+      line-height: 1.5;
+      margin: 16px 0 0;
+    }
+
+    @media (max-width: 420px) {
+      body {
+        padding: 18px 12px;
+      }
+
+      .card {
+        padding: 16px;
+      }
+
+      .buttons {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 
 <body>
-<main>
-  <h1>◉ TonoLab</h1>
-  <p>Estimá el tono de piel a partir de una foto. Para obtener mejores resultados, usá iluminación natural y evitá filtros.</p>
-
-  <section class="card">
-    <h3>1. Elegí una foto</h3>
-
-    <div class="actions">
-      <button id="cameraBtn">◉ Sacar foto</button>
-      <button id="fileBtn" class="secondary">Elegir foto</button>
-    </div>
-
-    <input id="cameraInput" type="file" accept="image/*" capture="user" class="hidden">
-    <input id="fileInput" type="file" accept="image/*" class="hidden">
-
-    <p id="status" class="status">Cargando detector facial...</p>
-  </section>
-
-  <section id="confirmCard" class="card hidden">
-    <h3>2. Confirmá la foto</h3>
-    <img id="preview" alt="Vista previa de la foto">
-
-    <div class="actions">
-      <button id="analyzeBtn">Sí, analizar</button>
-      <button id="retryBtn" class="secondary">Elegir otra</button>
-    </div>
-  </section>
-
-  <section id="resultsCard" class="card hidden">
-    <h3>3. Resultados</h3>
-    <p>Los recuadros indican las caras detectadas.</p>
-    <canvas id="result"></canvas>
-    <div id="people"></div>
-    <p><small>Los resultados son estimaciones. La iluminación, las sombras, la cámara y los filtros pueden alterar el color detectado.</small></p>
-  </section>
-</main>
-
-<script type="module">
-import {
-  FaceDetector,
-  FilesetResolver
-} from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14";
-
-const $ = id => document.getElementById(id);
-
-const palette = [
-  ["Porcelana 9% Negro", "#f6e4d5"],
-  ["Marfil claro 14% Negro", "#f0d5bd"],
-  ["Beige claro 21% Negro", "#e9c3a2"],
-  ["Arena 28% Negro", "#dfb18a"],
-  ["Miel clara 32% Negro", "#d5a078"],
-  ["Dorado 35% Negro", "#c99568"],
-  ["Caramelo claro 41% Negro", "#bd895c"],
-  ["Caramelo 47% Negro", "#ad774e"],
-  ["Avellana 54% Negro", "#9d6a47"],
-  ["Bronce 61% Negro", "#8d5c3d"],
-  ["Castaño claro 64% Negro", "#7d4f34"],
-  ["Castaño 67% Negro", "#70452f"],
-  ["Castaño cálido 70% Negro", "#643d2b"],
-  ["Chocolate 75% Negro", "#583624"],
-  ["Chocolate oscuro 78% Negro", "#4c3024"],
-  ["Ébano cálido 82% Negro", "#422b22"],
-  ["Ébano 88% Negro", "#39261f"],
-  ["Ébano profundo 91% Negro", "#30211c"],
-  ["Oscuro profundo 96% Negro", "#281c18"],
-  ["Muy oscuro 100% Negro", "#211815"]
-];
-
-let detector = null;
-let photo = new Image();
-let ready = false;
-
-let busy = false;
-
-function setStatus(message) {
-  $("status").textContent = message;
-}
-
-async function initDetector() {
-  try {
-    const vision = await FilesetResolver.forVisionTasks(
-      "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm"
-    );
-
-    detector = await FaceDetector.createFromOptions(vision, {
-      baseOptions: {
-        modelAssetPath:
-          "https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite",
-        delegate: "CPU"
-      },
-      runningMode: "IMAGE",
-      minDetectionConfidence: 0.5
-    });
-
-    ready = true;
-    setStatus("Detector listo. Elegí una foto para empezar.");
-  } catch (error) {
-    console.error(error);
-    setStatus("No se pudo cargar el detector. Revisá tu conexión e intentá recargar la página.");
-  }
-}
-
-function openFile(input) {
-  if (busy) return;
-  input.click();
-}
-
-$("cameraBtn").addEventListener("click", () => {
-  openFile($("cameraInput"));
-});
-
-$("fileBtn").addEventListener("click", () => {
-  openFile($("fileInput"));
-});
-
-$("cameraInput").addEventListener("change", handleFile);
-$("fileInput").addEventListener("change", handleFile);
-
-function handleFile(event) {
-  const file = event.target.files?.[0];
-  event.target.value = "";
-
-  if (!file) return;
-
-  if (!file.type.startsWith("image/")) {
-    setStatus("Elegí un archivo de imagen válido.");
-    return;
-  }
-
-  const url = URL.createObjectURL(file);
-
-  photo.onload = () => {
-    URL.revokeObjectURL(url);
-
-    $("preview").src = photo.src;
-    $("confirmCard").classList.remove("hidden");
-    $("resultsCard").classList.add("hidden");
-
-    setStatus("Foto cargada. Confirmá para analizarla.");
-  };
-
-  photo.onerror = () => {
-    URL.revokeObjectURL(url);
-    setStatus("No se pudo abrir la imagen. Probá con otra foto.");
-  };
-
-  photo.src = url;
-}
-
-$("retryBtn").addEventListener("click", () => {
-  $("confirmCard").classList.add("hidden");
-  $("resultsCard").classList.add("hidden");
-  setStatus("Elegí otra foto cuando quieras.");
-});
-
-function clamp(value, min, max) {
-  return Math.max(min, Math.min(max, value));
-}
-
-function median(values) {
-  if (!values.length) return null;
-
-  const sorted = [...values].sort((a, b) => a - b);
-  const middle = Math.floor(sorted.length / 2);
-
-  return sorted.length % 2
-    ? sorted[middle]
-    : (sorted[middle - 1] + sorted[middle]) / 2;
-}
-
-function rgbToHex(rgb) {
-  return "#" + rgb
-    .map(value => Math.round(clamp(value, 0, 255))
-      .toString(16).padStart(2, "0"))
-    .join("");
-}
-
-function hexToRgb(hex) {
-  const value = hex.replace("#", "");
-
-  return [
-    parseInt(value.slice(0, 2), 16),
-    parseInt(value.slice(2, 4), 16),
-    parseInt(value.slice(4, 6), 16)
-  ];
-}
-
-/* Convierte RGB a CIELAB para comparar tonos de forma más perceptual. */
-function rgbToLab(rgb) {
-  let [r, g, b] = rgb.map(value => {
-    value /= 255;
-    return value <= 0.04045
-      ? value / 12.92
-      : Math.pow((value + 0.055) / 1.055, 2.4);
-  });
-
-  let x = (r * 0.4124564 + g * 0.3575761 + b * 0.1804375) / 0.95047;
-  let y = (r * 0.2126729 + g * 0.7151522 + b * 0.0721750);
-  let z = (r * 0.0193339 + g * 0.1191920 + b * 0.9503041) / 1.08883;
-
-  const f = value => value > 0.008856
-    ? Math.cbrt(value)
-    : (7.787 * value) + (16 / 116);
-
-  x = f(x);
-  y = f(y);
-  z = f(z);
-
-  return [
-    116 * y - 16,
-    500 * (x - y),
-    200 * (y - z)
-  ];
-}
-
-const paletteLab = palette.map(item => rgbToLab(hexToRgb(item[1])));
-
-function nearestTone(rgb) {
-  const lab = rgbToLab(rgb);
-  let bestIndex = 0;
-  let bestDistance = Infinity;
-
-  for (let i = 0; i < paletteLab.length; i++) {
-    const other = paletteLab[i];
-
-    const distance = Math.sqrt(
-      (lab[0] - other[0]) ** 2 +
-      (lab[1] - other[1]) ** 2 +
-      (lab[2] - other[2]) ** 2
-    );
-
-    if (distance < bestDistance) {
-      bestDistance = distance;
-      bestIndex = i;
-    }
-  }
-
-  return {
-    name: palette[bestIndex][0],
-    hex: palette[bestIndex][1]
-  };
-}
-
-/*
- * Normaliza el rectángulo facial a píxeles del canvas.
- * Algunas versiones o fuentes pueden devolver valores normalizados.
- */
-function getFaceBox(detection, width, height) {
-  const box = detection.boundingBox;
-
-  if (!box) return null;
-
-  let x = Number(box.originX);
-  let y = Number(box.originY);
-  let w = Number(box.width);
-  let h = Number(box.height);
-
-  if (![x, y, w, h].every(Number.isFinite) || w <= 0 || h <= 0) {
-    return null;
-  }
-
-  if (
-    Math.abs(x) <= 1 &&
-    Math.abs(y) <= 1 &&
-    w <= 1 &&
-    h <= 1
-  ) {
-    x *= width;
-    w *= width;
-    y *= height;
-    h *= height;
-  }
-
-  const left = clamp(x, 0, width);
-  const top = clamp(y, 0, height);
-  const right = clamp(x + w, 0, width);
-  const bottom = clamp(y + h, 0, height);
-
-  if (right <= left || bottom <= top) return null;
-
-  return {
-    x: left,
-    y: top,
-    w: right - left,
-    h: bottom - top
-  };
-}
-
-/*
- * Toma pequeñas muestras de la frente y las mejillas.
- * Descarta píxeles muy oscuros, quemados o de colores extremos.
- * Usa la mediana para reducir el efecto de sombras y reflejos aislados.
- */
-function sampleSkin(ctx, box) {
-  const canvas = ctx.canvas;
-
-  const regions = [
-    // Frente
-    { cx: 0.50, cy: 0.32, rw: 0.22, rh: 0.10 },
-
-    // Mejilla izquierda
-    { cx: 0.34, cy: 0.54, rw: 0.18, rh: 0.13 },
-
-    // Mejilla derecha
-    { cx: 0.66, cy: 0.54, rw: 0.18, rh: 0.13 },
-
-    // Zonas laterales de las mejillas
-    { cx: 0.37, cy: 0.64, rw: 0.13, rh: 0.08 },
-    { cx: 0.63, cy: 0.64, rw: 0.13, rh: 0.08 }
-  ];
-
-  const pixels = [];
-
-  for (const region of regions) {
-    const centerX = box.x + box.w * region.cx;
-    const centerY = box.y + box.h * region.cy;
-
-    const sampleW = Math.max(2, Math.round(box.w * region.rw));
-    const sampleH = Math.max(2, Math.round(box.h * region.rh));
-
-    const left = clamp(
-      Math.round(centerX - sampleW / 2),
-      0,
-      canvas.width - 1
-    );
-
-    const top = clamp(
-      Math.round(centerY - sampleH / 2),
-      0,
-      canvas.height - 1
-    );
-
-    const right = clamp(
-      left + sampleW,
-      left + 1,
-      canvas.width
-    );
-
-    const bottom = clamp(
-      top + sampleH,
-      top + 1,
-      canvas.height
-    );
-
-    const data = ctx.getImageData(
-      left,
-      top,
-      right - left,
-      bottom - top
-    ).data;
-
-    for (let i = 0; i < data.length; i += 4) {
-      const r = data[i];
-      const g = data[i + 1];
-      const b = data[i + 2];
-      const alpha = data[i + 3];
-
-      if (alpha < 200) continue;
-
-      const brightness = (r + g + b) / 3;
-      const max = Math.max(r, g, b);
-      const min = Math.min(r, g, b);
-
-      // Evita sombras muy profundas y reflejos casi blancos.
-      if (brightness < 35 || brightness > 248) continue;
-
-      // Descarta colores extremadamente saturados o poco naturales.
-      if (max - min > 115) continue;
-
-      // Elimina píxeles claramente azulados o verdosos.
-      if (b > r * 1.22 && b > g * 1.12) continue;
-      if (g > r * 1.25 && g > b * 1.12) continue;
-
-      pixels.push([r, g, b]);
-    }
-  }
-
-  // Si hay muy pocos píxeles útiles, es mejor no inventar un resultado.
-  if (pixels.length < 12) return null;
-
-  const rgb = [
-    median(pixels.map(pixel => pixel[0])),
-    median(pixels.map(pixel => pixel[1])),
-    median(pixels.map(pixel => pixel[2]))
-  ];
-
-  return rgb.map(value => Math.round(value));
-}
-
-function drawFaceBox(ctx, box, index) {
-  ctx.save();
-
-  ctx.strokeStyle = "#8de3d4";
-  ctx.lineWidth = Math.max(2, ctx.canvas.width / 350);
-  ctx.strokeRect(box.x, box.y, box.w, box.h);
-
-  const label = `Persona ${index + 1}`;
-  const fontSize = Math.max(13, ctx.canvas.width / 45);
-
-  ctx.font = `bold ${fontSize}px system-ui`;
-
-  const labelWidth = ctx.measureText(label).width + 14;
-  const labelHeight = fontSize + 10;
-  const labelY = Math.max(0, box.y - labelHeight);
-
-  ctx.fillStyle = "#8de3d4";
-  ctx.fillRect(box.x, labelY, labelWidth, labelHeight);
-
-  ctx.fillStyle = "#10131c";
-  ctx.fillText(label, box.x + 7, labelY + fontSize + 1);
-
-  ctx.restore();
-}
-
-function renderPerson(index, rgb) {
-  const container = document.createElement("div");
-  container.className = "person";
-
-  const swatch = document.createElement("div");
-  swatch.className = "swatch";
-
-  const textContainer = document.createElement("div");
-  const heading = document.createElement("strong");
-  const detail = document.createElement("p");
-
-  heading.textContent = `Persona ${index + 1}`;
-
-  if (rgb) {
-    const tone = nearestTone(rgb);
-    const actualHex = rgbToHex(rgb);
-
-    swatch.style.backgroundColor = actualHex;
-
-    detail.textContent =
-      `Estimación: ${tone.name} (${tone.hex}). Color muestreado: ${actualHex}.`;
-  } else {
-    swatch.style.backgroundColor = "#30394d";
-    detail.textContent =
-      "No pude estimar el tono con suficientes píxeles fiables. Probá con mejor iluminación y el rostro despejado.";
-  }
-
-  textContainer.append(heading, detail);
-  container.append(swatch, textContainer);
-
-  $("people").appendChild(container);
-}
-
-$("analyzeBtn").addEventListener("click", analyzePhoto);
-
-async function analyzePhoto() {
-  if (busy) return;
-
-  if (!ready || !detector) {
-    setStatus("El detector todavía no está listo. Esperá un momento.");
-    return;
-  }
-
-  if (!photo.complete || !photo.naturalWidth || !photo.naturalHeight) {
-    setStatus("La foto todavía no está lista. Elegí otra e intentá de nuevo.");
-    return;
-  }
-
-  busy = true;
-  $("analyzeBtn").disabled = true;
-  $("retryBtn").disabled = true;
-  setStatus("Analizando la foto...");
-
-  try {
-    const canvas = $("result");
-    const maxDimension = 1200;
-    const scale = Math.min(
-      1,
-      maxDimension / Math.max(photo.naturalWidth, photo.naturalHeight)
-    );
-
-    canvas.width = Math.max(1, Math.round(photo.naturalWidth * scale));
-    canvas.height = Math.max(1, Math.round(photo.naturalHeight * scale));
-
+  <main class="app">
+    <header>
+      <span class="logo">◉</span>
+      <span>TonoLab</span>
+    </header>
+
+    <section class="card">
+      <h2>Analizador de tonos</h2>
+      <p class="subtitle">
+        Elegí una foto o sacá una con la cámara. La aplicación detectará
+        los rostros e intentará estimar el color de la piel.
+      </p>
+
+      <div class="buttons">
+        <button class="primary" id="cameraButton">
+          📷 Sacar una foto
+        </button>
+
+        <button class="secondary" id="galleryButton">
+          🖼️ Elegir una foto
+        </button>
+      </div>
+
+      <input
+        id="cameraInput"
+        type="file"
+        accept="image/*"
+        capture="environment"
+      >
+
+      <input
+        id="galleryInput"
+        type="file"
+        accept="image/*"
+      >
+
+      <div id="previewArea">
+        <img id="preview" alt="Vista previa de la fotografía">
+
+        <div class="preview-actions">
+          <button class="secondary" id="changeButton">
+            Cambiar foto
+          </button>
+
+          <button class="primary" id="analyzeButton">
+            Analizar foto
+          </button>
+        </div>
+      </div>
+
+      <div id="status" role="status">
+        Esperando una fotografía.
+      </div>
+    </section>
+
+    <section class="card" id="results">
+      <h2>Resultados</h2>
+      <p class="subtitle">
+        Los recuadros indican los rostros detectados.
+      </p>
+
+      <canvas id="canvas"></canvas>
+
+      <div id="people"></div>
+
+      <p class="footnote">
+        El porcentaje indica la oscuridad relativa del color detectado.
+        La iluminación, las sombras, el maquillaje y la calidad de la
+        imagen pueden afectar la estimación. No es una medida clínica
+        ni una clasificación de personas.
+      </p>
+    </section>
+  </main>
+
+  <script type="module">
+    import {
+      FaceDetector,
+      FilesetResolver
+    } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14";
+
+    const $ = id => document.getElementById(id);
+
+    let detector = null;
+    let selectedImage = null;
+    let detectorReady = false;
+
+    const cameraInput = $("cameraInput");
+    const galleryInput = $("galleryInput");
+    const preview = $("preview");
+    const previewArea = $("previewArea");
+    const analyzeButton = $("analyzeButton");
+    const canvas = $("canvas");
     const ctx = canvas.getContext("2d", {
       willReadFrequently: true
     });
 
-    // Primero se dibuja la imagen; luego se detectan caras y se muestrea.
-    ctx.drawImage(photo, 0, 0, canvas.width, canvas.height);
-
-    let detections;
-
-    try {
-      detections = detector.detect(canvas).detections || [];
-    } catch (error) {
-      console.error(error);
-      setStatus("No se pudo analizar esta foto. Probá con otra imagen.");
-      return;
+    function setStatus(message) {
+      $("status").textContent = message;
     }
 
-    $("people").replaceChildren();
-    $("resultsCard").classList.remove("hidden");
-
-    if (!detections.length) {
-      setStatus("No se detectaron caras. Probá con una foto frontal, iluminada y sin filtros.");
-      return;
+    function clamp(value, min, max) {
+      return Math.max(min, Math.min(max, value));
     }
 
-    const faces = detections
-      .map(detection => ({
-        detection,
-        box: getFaceBox(detection, canvas.width, canvas.height)
-      }))
-      .filter(item => item.box)
-      .sort((a, b) => a.box.x - b.box.x);
-
-    if (!faces.length) {
-      setStatus("Se detectaron datos faciales inválidos. Probá con otra foto.");
-      return;
+    function rgbToHex(rgb) {
+      return "#" + rgb
+        .map(value =>
+          Math.round(value)
+            .toString(16)
+            .padStart(2, "0")
+        )
+        .join("")
+        .toUpperCase();
     }
 
-    // Las muestras se obtienen del canvas original, sin los recuadros.
-    const samples = faces.map(({ box }) => sampleSkin(ctx, box));
+    // Calcula un índice de oscuridad entre 1 y 100.
+    function darknessPercentage(rgb) {
+      const linear = rgb.map(value => {
+        value /= 255;
 
-    // Los recuadros se dibujan después de terminar todas las muestras.
-    faces.forEach(({ box }, index) => {
-      drawFaceBox(ctx, box, index);
-    });
+        return value <= 0.04045
+          ? value / 12.92
+          : Math.pow((value + 0.055) / 1.055, 2.4);
+      });
 
-    samples.forEach((rgb, index) => {
-      renderPerson(index, rgb);
-    });
+      const luminance =
+        0.2126 * linear[0] +
+        0.7152 * linear[1] +
+        0.0722 * linear[2];
 
-    const successful = samples.filter(Boolean).length;
-
-    if (successful === faces.length) {
-      setStatus(`Análisis terminado. Caras detectadas: ${faces.length}.`);
-    } else {
-      setStatus(
-        `Análisis terminado. ${successful} de ${faces.length} caras tuvieron una muestra suficiente.`
+      return Math.round(
+        clamp((1 - luminance) * 100, 1, 100)
       );
     }
-  } catch (error) {
-    console.error(error);
-    setStatus("Ocurrió un error al analizar la foto. Intentá con otra.");
-  } finally {
-    busy = false;
-    $("analyzeBtn").disabled = false;
-    $("retryBtn").disabled = false;
-  }
-}
 
-initDetector();
-</script>
+    function rgbToHsl([r, g, b]) {
+      r /= 255;
+      g /= 255;
+      b /= 255;
+
+      const max = Math.max(r, g, b);
+      const min = Math.min(r, g, b);
+      const delta = max - min;
+
+      let h = 0;
+      let s = 0;
+
+      const l = (max + min) / 2;
+
+      if (delta !== 0) {
+        s = delta / (1 - Math.abs(2 * l - 1));
+
+        switch (max) {
+          case r:
+            h = 60 * (((g - b) / delta) % 6);
+            break;
+
+          case g:
+            h = 60 * ((b - r) / delta + 2);
+            break;
+
+          default:
+            h = 60 * ((r - g) / delta + 4);
+            break;
+        }
+      }
+
+      if (h < 0) h += 360;
+
+      return {
+        h,
+        s: s * 100,
+        l: l * 100
+      };
+    }
+
+    // Asigna descripciones según el color estimado.
+    function describeTone(rgb) {
+      const { h, s, l } = rgbToHsl(rgb);
+
+      let base;
+
+      if (s < 10) {
+        if (l > 85) base = "marfil casi neutro";
+        else if (l > 65) base = "beige grisáceo";
+        else if (l > 40) base = "marrón neutro";
+        else if (l > 20) base = "marrón oscuro neutro";
+        else base = "ébano neutro";
+      } else if (h < 15 || h >= 345) {
+        if (l > 65) base = "rosado claro";
+        else if (l > 45) base = "rosado tostado";
+        else if (l > 25) base = "marrón rojizo";
+        else base = "caoba rojiza";
+      } else if (h < 35) {
+        if (l > 75) base = "melocotón claro";
+        else if (l > 60) base = "durazno dorado";
+        else if (l > 45) base = "miel tostada";
+        else if (l > 30) base = "caramelo rojizo";
+        else base = "chocolate rojizo";
+      } else if (h < 50) {
+        if (l > 75) base = "marfil cálido";
+        else if (l > 60) base = "beige dorado";
+        else if (l > 45) base = "miel dorada";
+        else if (l > 30) base = "castaño cobrizo";
+        else base = "chocolate cálido";
+      } else if (h < 75) {
+        if (l > 75) base = "crema dorada";
+        else if (l > 60) base = "arena cálida";
+        else if (l > 45) base = "caramelo dorado";
+        else if (l > 30) base = "bronce tostado";
+        else base = "ébano cálido";
+      } else if (h < 165) {
+        if (l > 70) base = "beige oliva claro";
+        else if (l > 50) base = "oliva dorado";
+        else if (l > 30) base = "castaño oliva";
+        else base = "ébano oliva";
+      } else if (h < 200) {
+        if (l > 60) base = "beige frío";
+        else if (l > 35) base = "marrón frío";
+        else base = "ébano frío";
+      } else if (h < 255) {
+        if (l > 60) base = "beige ceniza";
+        else if (l > 35) base = "marrón ceniza";
+        else base = "ébano ceniza";
+      } else {
+        if (l > 65) base = "rosado malva";
+        else if (l > 45) base = "marrón rosado";
+        else if (l > 25) base = "chocolate violáceo";
+        else base = "ébano violáceo";
+      }
+
+      let modifier = "";
+
+      if (s >= 55) modifier = " intenso";
+      else if (s < 20) modifier = " apagado";
+
+      return base + modifier;
+    }
+
+    function median(values) {
+      if (!values.length) return null;
+
+      values.sort((a, b) => a - b);
+
+      const middle = Math.floor(values.length / 2);
+
+      return values.length % 2
+        ? values[middle]
+        : (values[middle - 1] + values[middle]) / 2;
+    }
+
+    // Estima el color usando zonas centrales del rostro,
+    // descartando píxeles demasiado oscuros, claros o saturados.
+    function sampleSkinTone(box) {
+      const x = box.originX;
+      const y = box.originY;
+      const w = box.width;
+      const h = box.height;
+
+      const regions = [
+        { x: x + w * 0.30, y: y + h * 0.24, w: w * 0.40, h: h * 0.12 },
+        { x: x + w * 0.14, y: y + h * 0.48, w: w * 0.25, h: h * 0.17 },
+        { x: x + w * 0.61, y: y + h * 0.48, w: w * 0.25, h: h * 0.17 }
+      ];
+
+      const channels = [[], [], []];
+
+      for (const region of regions) {
+        const left = clamp(Math.floor(region.x), 0, canvas.width - 1);
+        const top = clamp(Math.floor(region.y), 0, canvas.height - 1);
+        const right = clamp(
+          Math.ceil(region.x + region.w),
+          left + 1,
+          canvas.width
+        );
+        const bottom = clamp(
+          Math.ceil(region.y + region.h),
+          top + 1,
+          canvas.height
+        );
+
+        const width = right - left;
+        const height = bottom - top;
+
+        if (width <= 0 || height <= 0) continue;
+
+        const data = ctx.getImageData(
+          left, top, width, height
+        ).data;
+
+        const step = Math.max(
+          1,
+          Math.floor(Math.sqrt((width * height) / 450))
+        );
+
+        for (let py = 0; py < height; py += step) {
+          for (let px = 0; px < width; px += step) {
+            const i = (py * width + px) * 4;
+
+            const r = data[i];
+            const g = data[i + 1];
+            const b = data[i + 2];
+
+            const max = Math.max(r, g, b);
+            const min = Math.min(r, g, b);
+            const brightness = (r + g + b) / 3;
+
+            if (brightness < 25 || brightness > 245) continue;
+            if (max - min > 100) continue;
+
+            channels[0].push(r);
+            channels[1].push(g);
+            channels[2].push(b);
+          }
+        }
+      }
+
+      if (channels[0].length < 8) return null;
+
+      return channels.map(median);
+    }
+
+    function renderPerson(index, rgb) {
+      const container = document.createElement("div");
+      container.className = "person";
+
+      const swatch = document.createElement("div");
+      swatch.className = "swatch";
+
+      const textContainer = document.createElement("div");
+      const heading = document.createElement("strong");
+      const detail = document.createElement("p");
+
+      heading.textContent = `Persona ${index + 1}`;
+
+      if (rgb) {
+        const actualHex = rgbToHex(rgb);
+        const percentage = darknessPercentage(rgb);
+        const description = describeTone(rgb);
+
+        swatch.style.backgroundColor = actualHex;
+        heading.textContent = `${percentage}% — ${description}`;
+        detail.textContent = `Persona ${index + 1} · Color detectado: ${actualHex}`;
+      } else {
+        swatch.style.backgroundColor = "#30394d";
+        detail.textContent =
+          "No pude estimar el tono con suficientes píxeles fiables. Probá con mejor iluminación.";
+      }
+
+      textContainer.append(heading, detail);
+      container.append(swatch, textContainer);
+      $("people").appendChild(container);
+    }
+
+    async function initDetector() {
+      if (detector) return true;
+
+      setStatus("Preparando el detector de rostros…");
+
+      try {
+        const vision = await FilesetResolver.forVisionTasks(
+          "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm"
+        );
+
+        detector = await FaceDetector.createFromOptions(vision, {
+          baseOptions: {
+            modelAssetPath:
+              "https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite",
+            delegate: "CPU"
+          },
+          runningMode: "IMAGE",
+          minDetectionConfidence: 0.5
+        });
+
+        detectorReady = true;
+        return true;
+      } catch (error) {
+        console.error(error);
+
+        setStatus(
+          "No se pudo cargar el detector. Revisá tu conexión a internet e intentá nuevamente."
+        );
+
+        return false;
+      }
+    }
+
+    function loadImage(file) {
+      if (!file || !file.type.startsWith("image/")) {
+        setStatus("Elegí un archivo de imagen válido.");
+        return;
+      }
+
+      if (selectedImage) {
+        URL.revokeObjectURL(selectedImage);
+      }
+
+      selectedImage = URL.createObjectURL(file);
+      preview.src = selectedImage;
+
+      preview.onload = () => {
+        previewArea.style.display = "block";
+        $("results").style.display = "none";
+        $("people").replaceChildren();
+
+        setStatus("Foto cargada. Tocá «Analizar foto» para continuar.");
+      };
+
+      preview.onerror = () => {
+        setStatus("No se pudo abrir esa imagen. Probá con otra.");
+      };
+    }
+
+    $("cameraButton").addEventListener("click", () => {
+      cameraInput.click();
+    });
+
+    $("galleryButton").addEventListener("click", () => {
+      galleryInput.click();
+    });
+
+    $("changeButton").addEventListener("click", () => {
+      galleryInput.click();
+    });
+
+    cameraInput.addEventListener("change", event => {
+      loadImage(event.target.files[0]);
+      event.target.value = "";
+    });
+
+    galleryInput.addEventListener("change", event => {
+      loadImage(event.target.files[0]);
+      event.target.value = "";
+    });
+
+    analyzeButton.addEventListener("click", async () => {
+      if (!preview.complete || !preview.naturalWidth) {
+        setStatus("Primero elegí una foto.");
+        return;
+      }
+
+      analyzeButton.disabled = true;
+      analyzeButton.textContent = "Analizando…";
+
+      try {
+        const ready = await initDetector();
+        if (!ready) return;
+
+        const maxDimension = 1800;
+        const scale = Math.min(
+          1,
+          maxDimension / Math.max(
+            preview.naturalWidth,
+            preview.naturalHeight
+          )
+        );
+
+        canvas.width = Math.round(preview.naturalWidth * scale);
+        canvas.height = Math.round(preview.naturalHeight * scale);
+
+        ctx.drawImage(
+          preview,
+          0,
+          0,
+          canvas.width,
+          canvas.height
+        );
+
+        const detections = detector.detect(canvas).detections || [];
+
+        $("people").replaceChildren();
+        $("results").style.display = "block";
+
+        if (detections.length === 0) {
+          setStatus(
+            "No se detectaron rostros. Probá con una foto frontal, bien iluminada y con los rostros visibles."
+          );
+
+          $("people").innerHTML =
+            '<p class="empty">No se encontraron personas para analizar.</p>';
+
+          return;
+        }
+
+        // Ordenar de izquierda a derecha para numerar los rostros.
+        detections.sort((a, b) =>
+          a.boundingBox.originX - b.boundingBox.originX
+        );
+
+        setStatus(
+          `Se detectaron ${detections.length} rostro(s).`
+        );
+
+        detections.forEach((detection, index) => {
+          const box = detection.boundingBox;
+
+          const rgb = sampleSkinTone(box);
+
+          ctx.save();
+          ctx.strokeStyle = "#8de3d4";
+          ctx.lineWidth = Math.max(2, canvas.width / 350);
+
+          ctx.strokeRect(
+            box.originX,
+            box.originY,
+            box.width,
+            box.height
+          );
+
+          ctx.fillStyle = "#8de3d4";
+          ctx.font = `bold ${Math.max(14, canvas.width / 45)}px sans-serif`;
+
+          ctx.fillText(
+            `Persona ${index + 1}`,
+            box.originX,
+            Math.max(18, box.originY - 7)
+          );
+
+          ctx.restore();
+
+          renderPerson(index, rgb);
+        });
+      } catch (error) {
+        console.error(error);
+
+        setStatus(
+          "Ocurrió un error al analizar la foto. Intentá con otra imagen."
+        );
+      } finally {
+        analyzeButton.disabled = false;
+        analyzeButton.textContent = "Analizar foto";
+      }
+    });
+
+    // Preparar el detector mientras se elige una imagen.
+    initDetector().then(ready => {
+      if (ready) {
+        setStatus("Listo. Elegí una foto para empezar.");
+      }
+    });
+  </script>
 </body>
 </html>
