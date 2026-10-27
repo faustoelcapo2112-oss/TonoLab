@@ -1,0 +1,649 @@
+
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TonoLab — medidor de tono de piel</title>
+
+<style>
+:root {
+  --bg:#10131b;
+  --panel:#191e29;
+  --primary:#d9b18b;
+  --secondary:#30394b;
+  --text:#f5f3f0;
+  --muted:#aeb7c8;
+  --border:#343c4c;
+  --blue:#1685ff;
+}
+* { box-sizing:border-box }
+body {
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:system-ui,-apple-system,sans-serif;
+}
+.app { max-width:920px; margin:auto; padding:24px 16px 48px }
+.eyebrow { color:#e5c5a6; font-size:12px; letter-spacing:.18em; font-weight:800 }
+.head { display:flex; align-items:center; justify-content:space-between; gap:12px }
+.mark { font-size:24px; font-weight:850; letter-spacing:-.04em }
+.pill { border:1px solid var(--border); border-radius:99px; padding:7px 11px; color:var(--muted); font-size:12px }
+h1 { font-size:clamp(30px,6vw,48px); line-height:1.04; letter-spacing:-.045em; margin:26px 0 12px }
+p { color:var(--muted); line-height:1.55 }
+.layout { display:grid; grid-template-columns:1.05fr .95fr; gap:16px; margin-top:22px }
+.panel { background:var(--panel); border:1px solid var(--border); border-radius:22px; padding:18px; min-width:0 }
+.camera { position:relative; background:#090b10; border-radius:15px; overflow:hidden; aspect-ratio:4/3; display:grid; place-items:center }
+.camera video,.camera canvas { width:100%; height:100%; object-fit:contain }
+.camera video { display:none }
+.placeholder { text-align:center; padding:24px; color:var(--muted) }
+.target { position:absolute; width:44%; height:35%; border:2px solid #fff9; border-radius:50%; box-shadow:0 0 0 999px #0002; pointer-events:none; display:none }
+.buttons { display:flex; gap:9px; flex-wrap:wrap; margin-top:13px }
+.btn { border:0; border-radius:12px; padding:12px 15px; font-weight:750; cursor:pointer; background:var(--primary); color:#21170f }
+.btn.secondary { background:var(--secondary); color:var(--text); border:1px solid var(--border) }
+.btn:disabled { opacity:.5; cursor:not-allowed }
+.small { font-size:12px; color:var(--muted) }
+.result { display:flex; gap:14px; align-items:center; margin:14px 0 }
+.swatch { width:90px; height:90px; border-radius:18px; border:1px solid #ffffff30; flex-shrink:0 }
+.result h2 { margin:0 0 5px; font-size:23px }
+.hex { font-family:ui-monospace,monospace; color:#d8c2ad }
+.meta { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px }
+.tag { background:#252c39; border:1px solid var(--border); border-radius:99px; padding:6px 9px; font-size:12px; color:#e3e6ec }
+.scale { display:grid; gap:6px; margin-top:12px }
+.tone { display:grid; grid-template-columns:22px 1fr 52px; gap:9px; align-items:center; border-radius:9px; padding:5px 7px; color:var(--text); font-size:12px }
+.tone.active { outline:2px solid #f0d4b5; background:#ffffff0d }
+.mini { height:19px; border-radius:5px }
+.foot { margin-top:18px; border-top:1px solid var(--border); padding-top:13px }
+.notice { font-size:12px; color:#c4ccda; background:#202633; border-radius:12px; padding:12px; margin-top:12px }
+.hidden { display:none!important }
+.people { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:10px; margin-top:12px }
+.person { display:grid; grid-template-columns:54px 1fr; gap:10px; align-items:start; padding:12px; border:1px solid var(--border); border-radius:14px; background:#141923 }
+.person .swatch { width:54px; height:54px; border-radius:10px }
+.person b { display:block; margin-bottom:4px }
+#peoplePanel { margin-top:16px }
+@media(max-width:680px) {
+  .layout { grid-template-columns:1fr }
+  .app { padding:18px 12px 34px }
+  .panel { padding:14px }
+  .swatch { width:78px; height:78px }
+}
+</style>
+</head>
+
+<body>
+<main class="app">
+
+  <div class="head">
+    <div>
+      <div class="eyebrow">COLORIMETRÍA · PROTOTIPO</div>
+      <div class="mark">TonoLab<span style="color:#d9b18b">.</span></div>
+    </div>
+    <span class="pill">20 tonos de referencia</span>
+  </div>
+
+  <h1>Encontrá el tono<br>más parecido a tu piel.</h1>
+  <p>Usá la cámara o subí una foto. TonoLab analiza varias zonas del rostro y compara el color con una escala de 20 tonos.</p>
+
+  <div class="layout">
+
+    <section class="panel">
+      <h3 style="margin:0 0 12px">01 / Captura</h3>
+
+      <div class="camera" id="camera">
+        <video id="video" autoplay playsinline muted></video>
+        <canvas id="canvas" class="hidden"></canvas>
+
+        <div class="placeholder" id="placeholder">
+          <div style="font-size:35px;margin-bottom:8px">◉</div>
+          <b>La cámara aparecerá acá</b>
+          <p class="small">Buscá luz natural indirecta y evitá filtros.</p>
+        </div>
+
+        <div class="target" id="target"></div>
+      </div>
+
+      <div class="buttons">
+        <button class="btn" id="start">Activar cámara</button>
+        <button class="btn secondary" id="capture" disabled>Analizar piel</button>
+        <button class="btn secondary" id="choosePhoto" type="button">Subir foto</button>
+        <input id="upload" type="file" accept="image/*"
+          style="position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;pointer-events:none"
+          aria-label="Elegir una foto">
+      </div>
+
+      <p class="small" id="status">La cámara requiere permiso del navegador. Si no funciona, podés subir una foto.</p>
+
+      <div class="notice">
+        Consejo: usá una foto nítida, con luz natural indirecta y sin filtros. La iluminación y la cámara pueden alterar los colores.
+      </div>
+    </section>
+
+    <section class="panel">
+      <h3 style="margin:0 0 12px">02 / Resultado estimado</h3>
+
+      <div class="result">
+        <div class="swatch" id="resultSwatch" style="background:#cca080"></div>
+        <div>
+          <h2 id="resultName">Beige tostado</h2>
+          <div class="hex" id="resultHex">#CCA080</div>
+          <div class="meta">
+            <span class="tag" id="resultNum">Tono 9 / 20</span>
+            <span class="tag" id="undertone">Subtono estimado: cálido</span>
+          </div>
+        </div>
+      </div>
+
+      <p id="resultDesc">El resultado se actualizará cuando analices una imagen.</p>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:20px">
+        <b>Escala completa</b>
+        <span class="small">oscuro → claro</span>
+      </div>
+      <div class="scale" id="scale"></div>
+    </section>
+
+  </div>
+
+  <section class="panel" id="peoplePanel">
+    <h3 style="margin:0 0 8px">03 / Rostros detectados</h3>
+    <p class="small">Cada rostro detectado se numera. Los rostros visualmente parecidos dentro de la misma imagen pueden agruparse como una persona.</p>
+    <div id="people" class="people">
+      <p class="small">Los resultados aparecerán acá después del análisis.</p>
+    </div>
+  </section>
+
+  <div class="foot small">
+    Privacidad: el análisis se procesa en tu navegador. Los tonos son estimaciones, no mediciones profesionales. La agrupación de rostros puede equivocarse.
+  </div>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.15/dist/face-api.js"></script>
+
+<script>
+const tones = [
+  ['Ébano profundo','#1B0F0A','neutro / frío'],
+  ['Marrón ébano','#2B160E','cálido'],
+  ['Marrón oscuro','#3D261A','neutro'],
+  ['Marrón profundo','#4F3322','cálido'],
+  ['Chocolate','#643E2B','neutro'],
+  ['Marrón medio oscuro','#795137','cálido'],
+  ['Bronce intenso','#8F5F3F','cálido'],
+  ['Marrón medio','#A07856','neutro'],
+  ['Trigueño','#B68A6A','cálido'],
+  ['Beige tostado','#C49A72','cálido'],
+  ['Beige oliva','#D0A886','oliva'],
+  ['Arena','#D9B796','cálido'],
+  ['Beige neutro','#E0C5A8','neutro'],
+  ['Marfil cálido','#E8D2B7','cálido'],
+  ['Marfil rosado','#EFD6C5','rosado'],
+  ['Porcelana','#F3E0D2','neutro'],
+  ['Blanco cálido','#F7E8D7','cálido'],
+  ['Blanco rosado','#FBE7E1','rosado'],
+  ['Blanco frío','#F7F3F8','frío'],
+  ['Blanco porcelana','#FFFFFF','neutro']
+];
+
+const $ = id => document.getElementById(id);
+let stream = null;
+let modelReady = false;
+let uploadedImage = null;
+
+const MODEL_URL =
+  'https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.15/model/';
+
+function rgb(hex) {
+  return [1,3,5].map(i => parseInt(hex.slice(i,i+2),16));
+}
+
+function renderScale(active=-1) {
+  $('scale').innerHTML = tones.map((t,i) => `
+    <div class="tone ${i===active?'active':''}">
+      <span>${i+1}.</span>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="mini" style="background:${t[1]};width:32px;flex-shrink:0"></div>
+        <span>${t[0]}</span>
+      </div>
+      <span style="text-align:right;color:#bdc5d2">${t[1]}</span>
+    </div>
+  `).join('');
+}
+
+function setStatus(message) {
+  $('status').textContent = message;
+}
+
+function rgbToHex(values) {
+  return '#' + values.map(v =>
+    Math.round(v).toString(16).padStart(2,'0')
+  ).join('').toUpperCase();
+}
+
+function median(values) {
+  const sorted = [...values].sort((a,b) => a-b);
+  return sorted[Math.floor(sorted.length/2)];
+}
+
+// Conversión RGB a CIELAB para comparar colores de forma más perceptual.
+function linear(v) {
+  v /= 255;
+  return v <= 0.04045 ? v/12.92 : Math.pow((v+0.055)/1.055,2.4);
+}
+
+function toLab(values) {
+  const [r,g,b] = values.map(linear);
+
+  const x = (r*.4124564 + g*.3575761 + b*.1804375)/.95047;
+  const y = (r*.2126729 + g*.7151522 + b*.072175)/1;
+  const z = (r*.0193339 + g*.119192 + b*.9503041)/1.08883;
+
+  const f = t => t > .008856 ? Math.cbrt(t) : 7.787037*t + 16/116;
+
+  return [
+    116*f(y)-16,
+    500*(f(x)-f(y)),
+    200*(f(y)-f(z))
+  ];
+}
+
+const toneLabs = tones.map(t => toLab(rgb(t[1])));
+
+function classifyColor(values) {
+  const lab = toLab(values);
+  let best = 0;
+  let bestDistance = Infinity;
+
+  toneLabs.forEach((ref,i) => {
+    const d = Math.sqrt(
+      (lab[0]-ref[0])**2 +
+      1.2*(lab[1]-ref[1])**2 +
+      (lab[2]-ref[2])**2
+    );
+
+    if (d < bestDistance) {
+      bestDistance = d;
+      best = i;
+    }
+  });
+
+  const [r,g,b] = values;
+  let undertone = 'neutro';
+
+  if (r-g > 18 && r-b > 25) undertone = 'cálido';
+  else if (b-r > 8) undertone = 'frío';
+  else if (g-r > 5 && g-b > 5) undertone = 'oliva';
+
+  return {
+    rgb: values,
+    tone: best,
+    undertone,
+    hex: rgbToHex(values)
+  };
+}
+
+// Muestrea varias zonas internas de las mejillas.
+// Descarta píxeles demasiado oscuros, brillantes o con colores extremos.
+function sampleFace(ctx, box, width, height) {
+  const samples = [[],[],[]];
+
+  const regions = [
+    {x:.20,y:.43,w:.23,h:.20},
+    {x:.57,y:.43,w:.23,h:.20},
+    {x:.34,y:.53,w:.32,h:.14}
+  ];
+
+  for (const region of regions) {
+    const x = Math.max(0, Math.floor(box.x + box.width*region.x));
+    const y = Math.max(0, Math.floor(box.y + box.height*region.y));
+    const w = Math.min(Math.floor(box.width*region.w), width-x);
+    const h = Math.min(Math.floor(box.height*region.h), height-y);
+
+    if (w < 1 || h < 1) continue;
+
+    const data = ctx.getImageData(x,y,w,h).data;
+
+    for (let i=0; i<data.length; i+=4) {
+      const r=data[i], g=data[i+1], b=data[i+2];
+      const max=Math.max(r,g,b);
+      const min=Math.min(r,g,b);
+      const brightness=.2126*r + .7152*g + .0722*b;
+
+      if (brightness < 35 || brightness > 246) continue;
+      if (max-min > 95) continue;
+      if (max > 250) continue;
+
+      samples[0].push(r);
+      samples[1].push(g);
+      samples[2].push(b);
+    }
+  }
+
+  if (samples[0].length < 12) return null;
+
+  return classifyColor(samples.map(median));
+}
+
+async function loadModels() {
+  if (modelReady) return;
+
+  if (!window.faceapi) {
+    throw new Error('No se pudo cargar el detector. Revisá tu conexión.');
+  }
+
+  setStatus('Preparando detector de rostros…');
+
+  await Promise.all([
+    faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+    faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
+    faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL)
+  ]);
+
+  modelReady = true;
+}
+
+// Compara descriptores para agrupar rostros parecidos
+// detectados dentro de la misma imagen.
+function descriptorDistance(a,b) {
+  let sum = 0;
+
+  for (let i=0; i<a.length; i++) {
+    sum += (a[i]-b[i])**2;
+  }
+
+  return Math.sqrt(sum);
+}
+
+function groupFaces(faces) {
+  const groups = [];
+
+  for (const face of faces) {
+    let bestGroup = null;
+    let bestDistance = Infinity;
+
+    for (const group of groups) {
+      const d = descriptorDistance(face.descriptor,group.center);
+
+      if (d < bestDistance) {
+        bestDistance = d;
+        bestGroup = group;
+      }
+    }
+
+    // Umbral orientativo: puede confundir o separar rostros.
+    if (bestGroup && bestDistance < .52) {
+      bestGroup.members.push(face);
+
+      const n = bestGroup.members.length;
+      bestGroup.center = bestGroup.center.map((v,i) =>
+        (v*(n-1)+face.descriptor[i])/n
+      );
+    } else {
+      groups.push({
+        members:[face],
+        center:Array.from(face.descriptor)
+      });
+    }
+  }
+
+  return groups;
+}
+
+function showMainResult(sample, description) {
+  if (!sample) return;
+
+  const tone = tones[sample.tone];
+
+  $('resultSwatch').style.background = sample.hex;
+  $('resultName').textContent = tone[0];
+  $('resultHex').textContent = sample.hex;
+  $('resultNum').textContent = `Tono ${sample.tone+1} / 20`;
+  $('undertone').textContent = 'Subtono estimado: ' + sample.undertone;
+  $('resultDesc').textContent = description;
+  renderScale(sample.tone);
+}
+
+async function analyzeSource(source) {
+  await loadModels();
+
+  setStatus('Detectando rostros y analizando tonos…');
+  $('people').innerHTML = '';
+
+  const detections = await faceapi
+    .detectAllFaces(
+      source,
+      new faceapi.TinyFaceDetectorOptions({
+        inputSize: 512,
+        scoreThreshold: .35
+      })
+    )
+    .withFaceLandmarks()
+    .withFaceDescriptors();
+
+  if (!detections.length) {
+    $('canvas').classList.add('hidden');
+    $('people').innerHTML =
+      '<p class="small">No se detectaron rostros. Probá con una foto más nítida, iluminada y con las caras más grandes.</p>';
+
+    setStatus('No se detectaron rostros.');
+    return;
+  }
+
+  const sourceWidth = source.videoWidth || source.naturalWidth;
+  const sourceHeight = source.videoHeight || source.naturalHeight;
+
+  const scale = Math.min(1,1500/Math.max(sourceWidth,sourceHeight));
+  const canvas = $('canvas');
+  const ctx = canvas.getContext('2d',{willReadFrequently:true});
+
+  canvas.width = Math.round(sourceWidth*scale);
+  canvas.height = Math.round(sourceHeight*scale);
+  ctx.drawImage(source,0,0,canvas.width,canvas.height);
+
+  const faces = detections.map((detection,index) => {
+    const b = detection.detection.box;
+
+    const box = {
+      x:b.x*scale,
+      y:b.y*scale,
+      width:b.width*scale,
+      height:b.height*scale
+    };
+
+    return {
+      n:index+1,
+      box,
+      descriptor:Array.from(detection.descriptor),
+      sample:sampleFace(ctx,box,canvas.width,canvas.height)
+    };
+  });
+
+  // Cuadrados azules y número de cada rostro.
+  faces.forEach(face => {
+    const b = face.box;
+    const fontSize = Math.max(15,canvas.width/48);
+    const label = `#${face.n}`;
+
+    ctx.lineWidth = Math.max(3,canvas.width/400);
+    ctx.strokeStyle = '#1685ff';
+    ctx.strokeRect(b.x,b.y,b.width,b.height);
+
+    ctx.font = `bold ${fontSize}px system-ui`;
+    const labelWidth = ctx.measureText(label).width+14;
+    const labelHeight = fontSize+12;
+    const labelY = Math.max(0,b.y-labelHeight);
+
+    ctx.fillStyle = '#1685ff';
+    ctx.fillRect(b.x,labelY,labelWidth,labelHeight);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText(label,b.x+7,labelY+fontSize+1);
+  });
+
+  canvas.classList.remove('hidden');
+  $('video').style.display = 'none';
+  $('placeholder').classList.add('hidden');
+  $('target').style.display = 'none';
+
+  const groups = groupFaces(faces).sort((a,b) =>
+    Math.min(...a.members.map(f=>f.n)) -
+    Math.min(...b.members.map(f=>f.n))
+  );
+
+  groups.forEach((group,index) => {
+    const valid = group.members.map(f=>f.sample).filter(Boolean);
+
+    let sample = null;
+
+    if (valid.length) {
+      sample = classifyColor([0,1,2].map(channel =>
+        median(valid.map(s=>s.rgb[channel]))
+      ));
+    }
+
+    const card = document.createElement('div');
+    card.className = 'person';
+
+    const swatch = document.createElement('div');
+    swatch.className = 'swatch';
+    swatch.style.background = sample ? sample.hex : '#30394b';
+
+    const body = document.createElement('div');
+    const title = document.createElement('b');
+    title.textContent = `Persona ${index+1}`;
+
+    const ids = document.createElement('div');
+    ids.className = 'small';
+    ids.textContent = 'Rostros agrupados: ' +
+      group.members.map(f=>`#${f.n}`).join(', ');
+
+    const info = document.createElement('div');
+    info.className = 'small';
+
+    if (sample) {
+      info.textContent =
+        `Tono ${sample.tone+1}: ${tones[sample.tone][0]} · `+
+        `${sample.hex} · subtono ${sample.undertone}`;
+    } else {
+      info.textContent =
+        'No hubo suficientes píxeles útiles para estimar el tono.';
+    }
+
+    body.append(title,ids,info);
+    card.append(swatch,body);
+    $('people').append(card);
+  });
+
+  const first = groups.find(g=>g.members.some(f=>f.sample));
+
+  if (first) {
+    const valid = first.members.map(f=>f.sample).filter(Boolean);
+
+    const combined = classifyColor([0,1,2].map(channel =>
+      median(valid.map(s=>s.rgb[channel]))
+    ));
+
+    showMainResult(
+      combined,
+      'Estimación del color de la primera persona detectada. El resultado depende de la iluminación, la cámara y la calidad de la foto.'
+    );
+  }
+
+  setStatus(
+    `Listo: ${faces.length} rostro(s) detectado(s), `+
+    `${groups.length} grupo(s) estimado(s).`
+  );
+}
+
+$('choosePhoto').addEventListener('click',()=>$('upload').click());
+
+$('upload').addEventListener('change',event => {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+
+  if (stream) {
+    stream.getTracks().forEach(track=>track.stop());
+    stream = null;
+  }
+
+  const url = URL.createObjectURL(file);
+  const image = new Image();
+
+  image.onload = async () => {
+    uploadedImage = image;
+    $('video').style.display = 'none';
+    $('placeholder').classList.add('hidden');
+    $('target').style.display = 'none';
+
+    try {
+      await analyzeSource(image);
+    } catch (error) {
+      console.error(error);
+      setStatus('Error al analizar: ' + error.message);
+    } finally {
+      URL.revokeObjectURL(url);
+    }
+  };
+
+  image.onerror = () => {
+    setStatus('No se pudo abrir esa imagen.');
+    URL.revokeObjectURL(url);
+  };
+
+  image.src = url;
+});
+
+$('start').addEventListener('click',async () => {
+  try {
+    if (!navigator.mediaDevices?.getUserMedia) {
+      throw new Error('La cámara requiere una página HTTPS.');
+    }
+
+    if (stream) stream.getTracks().forEach(t=>t.stop());
+
+    stream = await navigator.mediaDevices.getUserMedia({
+      video:{facingMode:'user'},
+      audio:false
+    });
+
+    $('video').srcObject = stream;
+    $('video').style.display = 'block';
+    $('canvas').classList.add('hidden');
+    $('placeholder').classList.add('hidden');
+    $('target').style.display = 'block';
+    $('capture').disabled = false;
+
+    setStatus('Cámara activa. Centrá la cara y tocá “Analizar piel”.');
+  } catch (error) {
+    setStatus('No se pudo activar la cámara: ' + error.message +
+      ' También podés subir una foto.');
+  }
+});
+
+$('capture').addEventListener('click',async () => {
+  const video = $('video');
+
+  if (!video.videoWidth) {
+    setStatus('Esperá a que la cámara termine de iniciar.');
+    return;
+  }
+
+  try {
+    await analyzeSource(video);
+  } catch (error) {
+    console.error(error);
+    setStatus('Error al analizar: ' + error.message);
+  } finally {
+    if (stream) {
+      stream.getTracks().forEach(track=>track.stop());
+      stream = null;
+    }
+  }
+});
+
+window.addEventListener('pagehide',() => {
+  if (stream) stream.getTracks().forEach(track=>track.stop());
+});
+
+renderScale();
+</script>
+</body>
+</html>
