@@ -1,8 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>TonoLab — medidor de tono de piel</title>
 <style>
 :root{--bg:#10131b;--panel:#191e29;--primary:#d9b18b;--secondary:#30394b;--text:#f5f3f0;--muted:#aeb7c8;--border:#343c4c}
@@ -50,570 +49,501 @@ p{color:var(--muted);line-height:1.55}
 <body>
 <main class="app">
 <div class="head">
-  <div>
-    <div class="eyebrow">COLORIMETRÍA · PROTOTIPO</div>
-    <div class="mark">TonoLab<span style="color:#d9b18b">.</span></div>
-  </div>
-  <span class="pill">20 tonos de referencia</span>
+<div>
+<div class="eyebrow">COLORIMETRÍA · PROTOTIPO</div>
+<div class="mark">TonoLab<span style="color:#d9b18b">.</span></div>
+</div>
+<span class="pill">20 tonos de referencia</span>
 </div>
 
 <h1>Encontrá el tono<br>más parecido a tu piel.</h1>
-<p>Usá la cámara o subí una foto. TonoLab toma muestras de color y busca los tonos de referencia más cercanos, con una estimación de subtono.</p>
+<p>Usá la cámara o subí una foto. TonoLab toma una muestra de color y busca el tono de referencia más cercano, con una estimación de subtono.</p>
 
 <div class="layout">
 <section class="panel">
 <h3 style="margin:0 0 12px">01 / Captura</h3>
-
 <div class="camera" id="camera">
-  <video id="video" autoplay playsinline muted></video>
-  <canvas id="canvas" class="hidden"></canvas>
-  <div class="placeholder" id="placeholder">
-    <div style="font-size:35px;margin-bottom:8px">◉</div>
-    <b>La cámara aparecerá acá</b>
-    <p class="small">Buscá luz natural indirecta y evitá filtros.</p>
-  </div>
-  <div class="target" id="target"></div>
+<video id="video" autoplay playsinline muted></video>
+<canvas id="canvas" class="hidden"></canvas>
+<div class="placeholder" id="placeholder">
+<div style="font-size:35px;margin-bottom:8px">◉</div>
+<b>La cámara aparecerá acá</b>
+<p class="small">Buscá luz natural indirecta y evitá filtros.</p>
 </div>
-
+<div class="target" id="target"></div>
+</div>
 <div class="buttons">
-  <button class="btn" id="start">Activar cámara</button>
-  <button class="btn secondary" id="capture" disabled>Analizar piel</button>
-  <button class="btn secondary" id="choosePhoto" type="button">Subir foto</button>
-  <input id="upload" type="file" accept="image/*" style="position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;pointer-events:none" aria-label="Elegir una foto">
+<button class="btn" id="start">Activar cámara</button>
+<button class="btn secondary" id="capture" disabled>Analizar piel</button>
+<button class="btn secondary" id="choosePhoto" type="button">Subir foto</button>
+<input id="upload" type="file" accept="image/*" style="position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;pointer-events:none" aria-label="Elegir una foto">
 </div>
-
 <p class="small" id="status">La cámara requiere permiso del navegador. Si no funciona, podés subir una foto.</p>
-<div class="notice">Consejo: usá una zona de piel sin maquillaje, sin sombra directa y con luz natural uniforme. La cámara puede alterar los colores.</div>
+<div class="notice">Consejo: usá una zona de piel sin maquillaje, sin sombra directa y con luz blanca o natural. La cámara puede alterar los colores.</div>
 </section>
 
 <section class="panel">
 <h3 style="margin:0 0 12px">02 / Resultado estimado</h3>
-
 <div class="result">
-  <div class="swatch" id="resultSwatch" style="background:#cca080"></div>
-  <div>
-    <h2 id="resultName">Beige tostado</h2>
-    <div class="hex" id="resultHex">#CCA080</div>
-    <div class="meta">
-      <span class="tag" id="resultNum">Tono 9 / 20</span>
-      <span class="tag" id="undertone">Subtono estimado: cálido</span>
-    </div>
-  </div>
+<div class="swatch" id="resultSwatch" style="background:#cca080"></div>
+<div>
+<h2 id="resultName">Beige tostado</h2>
+<div class="hex" id="resultHex">#CCA080</div>
+<div class="meta">
+<span class="tag" id="resultNum">Tono 9 / 20</span>
+<span class="tag" id="undertone">Subtono estimado: cálido</span>
 </div>
-
+</div>
+</div>
 <p id="resultDesc">El resultado se actualizará cuando analices una imagen.</p>
-
 <div style="display:flex;justify-content:space-between;align-items:center;margin-top:20px">
-  <b>Escala completa</b>
-  <span class="small">oscuro → claro</span>
+<b>Escala completa</b><span class="small">oscuro → claro</span>
 </div>
 <div class="scale" id="scale"></div>
 <div id="people" class="people"></div>
 </section>
 </div>
 
-<div class="foot small">Privacidad: el análisis se procesa en tu navegador; no se envía la imagen a un servidor propio. La clasificación es orientativa y puede variar por la iluminación, la cámara y otros factores.</div>
+<div class="foot small">Privacidad: el análisis se procesa en tu navegador; no envía la imagen a un servidor propio. La clasificación es orientativa, no una medición profesional ni una categoría exacta de una persona.</div>
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.15/dist/face-api.js"></script>
-
 <script>
-const tones = [
-  ['Ébano profundo','#1B0F0A','neutro / frío'],
-  ['Marrón ébano','#2B160E','cálido'],
-  ['Marrón oscuro','#3D261A','neutro'],
-  ['Marrón profundo','#4F3322','cálido'],
-  ['Chocolate','#643E2B','neutro'],
-  ['Marrón medio oscuro','#795137','cálido'],
-  ['Bronce intenso','#8F5F3F','cálido'],
-  ['Marrón medio','#A07856','neutro'],
-  ['Trigueño','#B68A6A','cálido'],
-  ['Beige dorado','#C49A72','cálido'],
-  ['Beige oliva','#D0A886','oliva'],
-  ['Arena','#D9B796','cálido'],
-  ['Beige neutro','#E0C5A8','neutro'],
-  ['Marfil cálido','#E8D2B7','cálido'],
-  ['Marfil rosado','#EFD6C5','rosado'],
-  ['Porcelana','#F3E0D2','neutro'],
-  ['Blanco cálido','#F7E8D7','cálido'],
-  ['Blanco rosado','#FBE7E1','rosado'],
-  ['Blanco frío','#F7F3F8','frío'],
-  ['Blanco porcelana','#FFFFFF','neutro']
+const tones=[
+['Ébano profundo','#1B0F0A','neutro / frío'],
+['Marrón ébano','#2B160E','cálido'],
+['Marrón oscuro','#3D261A','neutro'],
+['Marrón profundo','#4F3322','cálido'],
+['Chocolate','#643E2B','neutro'],
+['Marrón medio oscuro','#795137','cálido'],
+['Bronce intenso','#8F5F3F','cálido'],
+['Marrón medio','#A07856','neutro'],
+['Trigueño','#B68A6A','cálido'],
+['Beige dorado','#C49A72','cálido'],
+['Beige oliva','#D0A886','oliva'],
+['Arena','#D9B796','cálido'],
+['Beige neutro','#E0C5A8','neutro'],
+['Marfil cálido','#E8D2B7','cálido'],
+['Marfil rosado','#EFD6C5','rosado'],
+['Porcelana','#F3E0D2','neutro'],
+['Blanco cálido','#F7E8D7','cálido'],
+['Blanco rosado','#FBE7E1','rosado'],
+['Blanco frío','#F7F3F8','frío'],
+['Blanco porcelana','#FFFFFF','neutro']
 ];
 
-const $ = id => document.getElementById(id);
-let stream = null;
-let modelReady = false;
+const $=id=>document.getElementById(id);
+let stream=null,modelReady=false;
 
-const MODEL_URL =
-  'https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@master/weights';
+const MODEL_URL='https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@master/weights';
 
-function rgb(hex) {
-  return [1,3,5].map(i => parseInt(hex.slice(i,i+2),16));
+function rgb(hex){
+return [1,3,5].map(i=>parseInt(hex.slice(i,i+2),16));
 }
 
-function renderScale(active = -1) {
-  $('scale').innerHTML = tones.map((t,i) => `
-    <div class="tone ${i === active ? 'active' : ''}">
-      <span>${i+1}.</span>
-      <div style="display:flex;align-items:center;gap:8px">
-        <div class="mini" style="background:${t[1]};width:32px;flex-shrink:0"></div>
-        <span>${t[0]}</span>
-      </div>
-      <span style="text-align:right;color:#bdc5d2">${t[1]}</span>
-    </div>
-  `).join('');
+function renderScale(active=-1){
+$('scale').innerHTML=tones.map((t,i)=>`
+<div class="tone ${i===active?'active':''}">
+<span>${i+1}.</span>
+<div style="display:flex;align-items:center;gap:8px">
+<div class="mini" style="background:${t[1]};width:32px;flex-shrink:0"></div>
+<span>${t[0]}</span>
+</div>
+<span style="text-align:right;color:#bdc5d2">${t[1]}</span>
+</div>`).join('');
 }
 
-function linear(v) {
-  v /= 255;
-  return v <= .04045 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4);
+// Comparación de colores en Lab: se parece más a cómo percibimos
+// diferencias de color que una distancia RGB sencilla.
+function linear(v){
+v/=255;
+return v<=.04045?v/12.92:Math.pow((v+.055)/1.055,2.4);
 }
 
-function toLab(values) {
-  const [r,g,b] = values.map(linear);
-  const x = (r*.4124564 + g*.3575761 + b*.1804375) / .95047;
-  const y = (r*.2126729 + g*.7151522 + b*.0721750);
-  const z = (r*.0193339 + g*.1191920 + b*.9503041) / 1.08883;
-
-  const f = t => t > .008856 ? Math.cbrt(t) : 7.787037*t + 16/116;
-  return [116*f(y)-16, 500*(f(x)-f(y)), 200*(f(y)-f(z))];
+function toLab(values){
+const [r,g,b]=values.map(linear);
+const x=(r*.4124564+g*.3575761+b*.1804375)/.95047;
+const y=r*.2126729+g*.7151522+b*.0721750;
+const z=(r*.0193339+g*.1191920+b*.9503041)/1.08883;
+const f=t=>t>.008856?Math.cbrt(t):7.787037*t+16/116;
+return [116*f(y)-16,500*(f(x)-f(y)),200*(f(y)-f(z))];
 }
 
-const toneLabs = tones.map(t => toLab(rgb(t[1])));
+const toneLabs=tones.map(t=>toLab(rgb(t[1])));
 
-function median(values) {
-  const sorted = [...values].sort((a,b) => a-b);
-  const mid = Math.floor(sorted.length/2);
-  return sorted.length % 2
-    ? sorted[mid]
-    : (sorted[mid-1] + sorted[mid])/2;
+function median(values){
+const sorted=[...values].sort((a,b)=>a-b);
+const mid=Math.floor(sorted.length/2);
+return sorted.length%2?sorted[mid]:(sorted[mid-1]+sorted[mid])/2;
 }
 
-function classifyColor(values) {
-  const lab = toLab(values);
-  let best = 0;
-  let bestDistance = Infinity;
-
-  toneLabs.forEach((tone,i) => {
-    const d = Math.sqrt(
-      (lab[0]-tone[0])**2 +
-      1.2*(lab[1]-tone[1])**2 +
-      (lab[2]-tone[2])**2
-    );
-    if (d < bestDistance) {
-      bestDistance = d;
-      best = i;
-    }
-  });
-
-  const [r,g,b] = values;
-  let undertone = 'neutro';
-
-  if (r-g > 18 && r-b > 25) undertone = 'cálido';
-  else if (b-r > 8) undertone = 'frío';
-  else if (g-r > 5 && g-b > 5) undertone = 'oliva';
-
-  return {
-    rgb: values,
-    tone: best,
-    undertone,
-    hex: '#' + values.map(v =>
-      Math.round(v).toString(16).padStart(2,'0')
-    ).join('').toUpperCase()
-  };
-}
-
-function showResult(sample, description) {
-  const tone = tones[sample.tone];
-
-  $('resultSwatch').style.background = sample.hex;
-  $('resultName').textContent = tone[0];
-  $('resultHex').textContent = sample.hex;
-  $('resultNum').textContent = `Tono ${sample.tone+1} / 20`;
-  $('undertone').textContent = 'Subtono estimado: ' + sample.undertone;
-  $('resultDesc').textContent = description;
-  renderScale(sample.tone);
-}
-
-function sampleFace(ctx, box, W, H) {
-  const regions = [
-    [0.50,0.32,0.13,0.08],
-    [0.34,0.53,0.13,0.11],
-    [0.66,0.53,0.13,0.11],
-    [0.50,0.62,0.10,0.06]
-  ];
-
-  const pixels = [];
-
-  for (const [cx,cy,rw,rh] of regions) {
-    const x = Math.max(0,Math.round(box.x + box.width*(cx-rw/2)));
-    const y = Math.max(0,Math.round(box.y + box.height*(cy-rh/2)));
-    const w = Math.max(1,Math.round(box.width*rw));
-    const h = Math.max(1,Math.round(box.height*rh));
-
-    if (x+w > W || y+h > H) continue;
-
-    let data;
-    try {
-      data = ctx.getImageData(x,y,w,h).data;
-    } catch {
-      continue;
-    }
-
-    for (let i=0; i<data.length; i+=4) {
-      const r = data[i];
-      const g = data[i+1];
-      const b = data[i+2];
-      const max = Math.max(r,g,b);
-      const min = Math.min(r,g,b);
-      const brightness = (r+g+b)/3;
-
-      // Evita sombras extremas, reflejos y colores poco naturales.
-      if (
-        brightness < 35 ||
-        brightness > 246 ||
-        max-min > 95 ||
-        b > r*1.22 ||
-        r < g*.82 ||
-        r < b*.82
-      ) continue;
-
-      pixels.push([r,g,b]);
-    }
-  }
-
-  if (pixels.length < 12) return null;
-
-  return classifyColor([
-    median(pixels.map(p => p[0])),
-    median(pixels.map(p => p[1])),
-    median(pixels.map(p => p[2]))
-  ]);
-}
-
-async function loadModels() {
-  if (modelReady) return;
-
-  if (!window.faceapi) {
-    throw new Error('No se pudo cargar el detector. Revisá tu conexión.');
-  }
-
-  $('status').textContent = 'Preparando detector de rostros…';
-
-  await Promise.all([
-    faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
-    faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
-    faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL)
-  ]);
-
-  modelReady = true;
-}
-
-function descriptorDistance(a,b) {
-  let dot=0, aa=0, bb=0;
-
-  for (let i=0; i<a.length; i++) {
-    dot += a[i]*b[i];
-    aa += a[i]*a[i];
-    bb += b[i]*b[i];
-  }
-
-  return 1 - dot/(Math.sqrt(aa)*Math.sqrt(bb));
-}
-
-function groupFaces(faces) {
-  const groups = [];
-
-  for (const face of faces) {
-    let closest = null;
-    let bestDistance = Infinity;
-
-    for (const group of groups) {
-      const d = descriptorDistance(face.descriptor,group.center);
-      if (d < bestDistance) {
-        bestDistance = d;
-        closest = group;
-      }
-    }
-
-    if (closest && bestDistance < .36) {
-      closest.members.push(face);
-      const n = closest.members.length;
-
-      closest.center = closest.center.map((v,i) =>
-        (v*(n-1)+face.descriptor[i])/n
-      );
-    } else {
-      groups.push({
-        members:[face],
-        center:Array.from(face.descriptor)
-      });
-    }
-  }
-
-  return groups;
-}
-
-async function analyzeSource(source) {
-  await loadModels();
-
-  $('status').textContent = 'Detectando rostros…';
-
-  const options = new faceapi.TinyFaceDetectorOptions({
-    inputSize:416,
-    scoreThreshold:.35
-  });
-
-  const detections = await faceapi
-    .detectAllFaces(source,options)
-    .withFaceLandmarks()
-    .withFaceDescriptors();
-
-  if (!detections.length) {
-    $('people').innerHTML =
-      '<p class="small">No se detectaron rostros. Probá con una foto más nítida y con las caras más grandes.</p>';
-    $('status').textContent = 'No se detectaron rostros.';
-    return;
-  }
-
-  const sw = source.videoWidth || source.naturalWidth;
-  const sh = source.videoHeight || source.naturalHeight;
-  const scale = Math.min(1,1500/Math.max(sw,sh));
-
-  const canvas = $('canvas');
-  const ctx = canvas.getContext('2d',{willReadFrequently:true});
-
-  canvas.width = Math.round(sw*scale);
-  canvas.height = Math.round(sh*scale);
-  ctx.drawImage(source,0,0,canvas.width,canvas.height);
-
-  const faces = detections.map((d,i) => {
-    const b = d.detection.box;
-    const box = {
-      x:b.x*scale,
-      y:b.y*scale,
-      width:b.width*scale,
-      height:b.height*scale
-    };
-
-    return {
-      n:i+1,
-      box,
-      descriptor:Array.from(d.descriptor),
-      sample:sampleFace(ctx,box,canvas.width,canvas.height)
-    };
-  });
-
-  // Dibuja las detecciones encima de la imagen.
-  faces.forEach(face => {
-    const b = face.box;
-    ctx.strokeStyle = '#d9b18b';
-    ctx.lineWidth = Math.max(2,canvas.width/500);
-    ctx.strokeRect(b.x,b.y,b.width,b.height);
-
-    ctx.fillStyle = '#d9b18b';
-    ctx.font = `bold ${Math.max(15,canvas.width/48)}px system-ui`;
-    ctx.fillText(String(face.n),b.x+3,Math.max(18,b.y-5));
-  });
-
-  canvas.classList.remove('hidden');
-  canvas.style.display = 'block';
-  $('placeholder').classList.add('hidden');
-  $('video').style.display = 'none';
-  $('target').style.display = 'none';
-
-  const groups = groupFaces(faces);
-  const root = $('people');
-  root.innerHTML = '';
-
-  groups.forEach((group,i) => {
-    const valid = group.members.filter(face => face.sample);
-    let sample = null;
-
-    if (valid.length) {
-      sample = classifyColor([
-        median(valid.map(f => f.sample.rgb[0])),
-        median(valid.map(f => f.sample.rgb[1])),
-        median(valid.map(f => f.sample.rgb[2]))
-      ]);
-    }
-
-    const card = document.createElement('div');
-    card.className = 'person';
-
-    const swatch = document.createElement('div');
-    swatch.className = 'swatch';
-    swatch.style.background = sample ? sample.hex : '#30394b';
-
-    const body = document.createElement('div');
-    const title = document.createElement('b');
-    title.textContent = 'Persona ' + (i+1);
-
-    const ids = document.createElement('div');
-    ids.className = 'small';
-    ids.textContent = 'Rostro(s): ' +
-      group.members.map(f => f.n).join(', ');
-
-    const info = document.createElement('div');
-    info.className = 'small';
-
-    info.textContent = sample
-      ? `Tono ${sample.tone+1}: ${tones[sample.tone][0]} · ${sample.hex} · subtono ${sample.undertone}`
-      : 'No hubo suficientes píxeles útiles para estimar el tono.';
-
-    body.append(title,ids,info);
-    card.append(swatch,body);
-    root.append(card);
-  });
-
-  const first = groups.find(g => g.members.some(f => f.sample));
-
-  if (first) {
-    const samples = first.members.map(f => f.sample).filter(Boolean);
-
-    const combined = classifyColor([
-      median(samples.map(s => s.rgb[0])),
-      median(samples.map(s => s.rgb[1])),
-      median(samples.map(s => s.rgb[2]))
-    ]);
-
-    showResult(
-      combined,
-      'Estimación combinada de las apariciones agrupadas de la primera persona detectada.'
-    );
-  }
-
-  $('status').textContent =
-    `Listo: ${faces.length} rostro(s), agrupados en ${groups.length} persona(s). La agrupación puede equivocarse.`;
-}
-
-// Botón para abrir el selector de fotos.
-$('choosePhoto').addEventListener('click',() => $('upload').click());
-
-// Cargar una imagen desde el dispositivo.
-$('upload').addEventListener('change',event => {
-  const file = event.target.files?.[0];
-  if (!file) return;
-
-  if (stream) {
-    stream.getTracks().forEach(track => track.stop());
-    stream = null;
-  }
-
-  const url = URL.createObjectURL(file);
-  const img = new Image();
-
-  img.onload = async () => {
-    $('video').style.display = 'none';
-    $('canvas').classList.remove('hidden');
-    $('canvas').style.display = 'block';
-    $('placeholder').classList.add('hidden');
-    $('target').style.display = 'none';
-
-    try {
-      await analyzeSource(img);
-    } catch (error) {
-      console.error(error);
-      $('status').textContent = 'Error al analizar: ' + error.message;
-    } finally {
-      URL.revokeObjectURL(url);
-    }
-  };
-
-  img.onerror = () => {
-    $('status').textContent = 'No se pudo abrir esa imagen.';
-    URL.revokeObjectURL(url);
-  };
-
-  img.src = url;
+function classifyColor(values){
+const lab=toLab(values);
+let best=0,bestDistance=Infinity;
+
+toneLabs.forEach((tone,i)=>{
+const d=Math.sqrt(
+(lab[0]-tone[0])**2+
+1.2*(lab[1]-tone[1])**2+
+(lab[2]-tone[2])**2
+);
+if(d<bestDistance){bestDistance=d;best=i;}
 });
 
-// Activar la cámara con permiso del usuario.
-$('start').addEventListener('click',async () => {
-  try {
-    if (!navigator.mediaDevices?.getUserMedia) {
-      throw new Error('La cámara requiere una página HTTPS.');
-    }
+const [r,g,b]=values;
+let undertone='neutro';
+if(r-g>18&&r-b>25)undertone='cálido';
+else if(b-r>8)undertone='frío';
+else if(g-r>5&&g-b>5)undertone='oliva';
 
-    if (stream) {
-      stream.getTracks().forEach(track => track.stop());
-    }
+return {
+rgb:values,
+tone:best,
+undertone,
+hex:'#'+values.map(v=>Math.round(v).toString(16).padStart(2,'0')).join('').toUpperCase()
+};
+}
 
-    $('status').textContent = 'Solicitando acceso a la cámara…';
+function showResult(sample,description){
+const tone=tones[sample.tone];
+$('resultSwatch').style.background=sample.hex;
+$('resultName').textContent=tone[0];
+$('resultHex').textContent=sample.hex;
+$('resultNum').textContent=`Tono ${sample.tone+1} / 20`;
+$('undertone').textContent='Subtono estimado: '+sample.undertone;
+$('resultDesc').textContent=description;
+renderScale(sample.tone);
+}
 
-    try {
-      stream = await navigator.mediaDevices.getUserMedia({
-        video:{
-          facingMode:'user',
-          width:{ideal:1280},
-          height:{ideal:720}
-        },
-        audio:false
-      });
-    } catch {
-      // Segundo intento con restricciones más sencillas.
-      stream = await navigator.mediaDevices.getUserMedia({
-        video:true,
-        audio:false
-      });
-    }
+/*
+ * CAMBIO PRINCIPAL:
+ * analiza frente y mejillas en varias zonas, descarta píxeles
+ * demasiado oscuros o reflejados y combina los colores con medianas.
+ */
+function sampleFace(ctx,box,W,H){
+const regions=[
+[.50,.32,.16,.09], // frente
+[.34,.49,.15,.13], // mejilla izquierda
+[.66,.49,.15,.13], // mejilla derecha
+[.39,.60,.11,.07], // zona inferior de mejilla
+[.61,.60,.11,.07]
+];
 
-    const video = $('video');
-    video.srcObject = stream;
-    video.style.display = 'block';
-    $('canvas').style.display = 'none';
-    $('placeholder').classList.add('hidden');
-    $('target').style.display = 'block';
+const pixels=[];
 
-    await new Promise((resolve,reject) => {
-      if (video.readyState >= 1 && video.videoWidth) {
-        resolve();
-        return;
-      }
+for(const [cx,cy,rw,rh] of regions){
+const x=Math.max(0,Math.round(box.x+box.width*(cx-rw/2)));
+const y=Math.max(0,Math.round(box.y+box.height*(cy-rh/2)));
+const w=Math.max(1,Math.round(box.width*rw));
+const h=Math.max(1,Math.round(box.height*rh));
 
-      video.onloadedmetadata = () => resolve();
-      video.onerror = () => reject(new Error('No se pudo iniciar el video.'));
-    });
+if(x+w>W||y+h>H)continue;
 
-    await video.play();
+let data;
+try{
+data=ctx.getImageData(x,y,w,h).data;
+}catch{
+continue;
+}
 
-    $('capture').disabled = false;
-    $('status').textContent =
-      'Cámara activa. Centrá la cara y tocá “Analizar piel”.';
+for(let i=0;i<data.length;i+=4){
+const r=data[i],g=data[i+1],b=data[i+2];
+const max=Math.max(r,g,b),min=Math.min(r,g,b);
+const brightness=(r+g+b)/3;
 
-  } catch (error) {
-    $('status').textContent =
-      'No se pudo activar la cámara: ' + error.message +
-      ' También podés subir una foto.';
-  }
+// No descartamos la piel simplemente por ser oscura.
+// Solo excluimos sombras casi negras, reflejos y píxeles extremos.
+if(
+brightness<25||
+brightness>250||
+(max-min<5&&brightness>242)||
+(r<g*.72&&g>b*1.12)||
+(b>r*1.45&&b>100)
+)continue;
+
+pixels.push([r,g,b]);
+}
+}
+
+if(pixels.length<8)return null;
+
+// Mediana por canal: reduce la influencia de píxeles aislados.
+const sampled=[
+median(pixels.map(p=>p[0])),
+median(pixels.map(p=>p[1])),
+median(pixels.map(p=>p[2]))
+];
+
+return classifyColor(sampled);
+}
+
+async function loadModels(){
+if(modelReady)return;
+if(!window.faceapi)throw Error('No se pudo cargar el detector. Revisá tu conexión.');
+$('status').textContent='Preparando detector de rostros…';
+
+await Promise.all([
+faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
+faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL)
+]);
+
+modelReady=true;
+}
+
+function descDist(a,b){
+let dot=0,aa=0,bb=0;
+for(let i=0;i<a.length;i++){
+dot+=a[i]*b[i];
+aa+=a[i]*a[i];
+bb+=b[i]*b[i];
+}
+return 1-dot/(Math.sqrt(aa)*Math.sqrt(bb));
+}
+
+function groupFaces(faces){
+let groups=[];
+for(const f of faces){
+let found=null,bd=Infinity;
+for(const g of groups){
+let d=descDist(f.descriptor,g.center);
+if(d<bd){bd=d;found=g;}
+}
+if(found&&bd<.36){
+found.members.push(f);
+let n=found.members.length;
+found.center=found.center.map((v,i)=>(v*(n-1)+f.descriptor[i])/n);
+}else{
+groups.push({members:[f],center:Array.from(f.descriptor)});
+}
+}
+return groups;
+}
+
+async function analyzeSource(source){
+await loadModels();
+$('status').textContent='Detectando rostros y analizando colores…';
+
+const opts=new faceapi.TinyFaceDetectorOptions({
+inputSize:416,
+scoreThreshold:.35
 });
 
-// Analizar la imagen de la cámara.
-$('capture').addEventListener('click',async () => {
-  const video = $('video');
+const det=await faceapi.detectAllFaces(source,opts)
+.withFaceLandmarks()
+.withFaceDescriptors();
 
-  if (!video.videoWidth) {
-    $('status').textContent =
-      'Esperá a que la cámara termine de iniciar.';
-    return;
-  }
+if(!det.length){
+$('people').innerHTML='<p class="small">No se detectaron rostros. Probá con una foto más nítida y con las caras más grandes.</p>';
+$('status').textContent='No se detectaron rostros.';
+return;
+}
 
-  $('capture').disabled = true;
+const sw=source.videoWidth||source.naturalWidth;
+const sh=source.videoHeight||source.naturalHeight;
+const scale=Math.min(1,1500/Math.max(sw,sh));
+const c=$('canvas');
+const ctx=c.getContext('2d',{willReadFrequently:true});
 
-  try {
-    await analyzeSource(video);
-  } catch (error) {
-    console.error(error);
-    $('status').textContent = 'Error al analizar: ' + error.message;
-  } finally {
-    $('capture').disabled = !stream;
-  }
+c.width=Math.round(sw*scale);
+c.height=Math.round(sh*scale);
+ctx.drawImage(source,0,0,c.width,c.height);
+
+const faces=det.map((d,i)=>{
+const b=d.detection.box;
+const box={
+x:b.x*scale,
+y:b.y*scale,
+width:b.width*scale,
+height:b.height*scale
+};
+return {
+n:i+1,
+box,
+descriptor:Array.from(d.descriptor),
+sample:sampleFace(ctx,box,c.width,c.height)
+};
 });
 
-// Detener la cámara al salir de la página.
-window.addEventListener('pagehide',() => {
-  if (stream) stream.getTracks().forEach(track => track.stop());
+// Dibujar los rectángulos después de analizar los píxeles.
+faces.forEach(f=>{
+ctx.strokeStyle='#d9b18b';
+ctx.lineWidth=Math.max(2,c.width/500);
+ctx.strokeRect(f.box.x,f.box.y,f.box.width,f.box.height);
+ctx.fillStyle='#d9b18b';
+ctx.font=`bold ${Math.max(15,c.width/48)}px system-ui`;
+ctx.fillText(String(f.n),f.box.x+3,Math.max(18,f.box.y-5));
+});
+
+c.classList.remove('hidden');
+c.style.display='block';
+$('placeholder').classList.add('hidden');
+$('video').style.display='none';
+$('target').style.display='none';
+
+const groups=groupFaces(faces);
+groups.sort((a,b)=>Math.min(...a.members.map(f=>f.n))-Math.min(...b.members.map(f=>f.n)));
+
+const root=$('people');
+root.innerHTML='';
+
+groups.forEach((g,i)=>{
+const valid=g.members.filter(f=>f.sample);
+let sample=null;
+
+if(valid.length){
+sample=classifyColor([
+median(valid.map(f=>f.sample.rgb[0])),
+median(valid.map(f=>f.sample.rgb[1])),
+median(valid.map(f=>f.sample.rgb[2]))
+]);
+}
+
+const card=document.createElement('div');
+card.className='person';
+
+const swatch=document.createElement('div');
+swatch.className='swatch';
+swatch.style.background=sample?sample.hex:'#30394b';
+
+const body=document.createElement('div');
+const title=document.createElement('b');
+title.textContent='Persona '+(i+1);
+
+const ids=document.createElement('div');
+ids.className='small';
+ids.textContent='Rostro(s): '+g.members.map(f=>f.n).join(', ');
+
+const info=document.createElement('div');
+info.className='small';
+info.textContent=sample
+?`Tono ${sample.tone+1}: ${tones[sample.tone][0]} · ${sample.hex} · subtono ${sample.undertone}`
+:'No hubo suficientes píxeles útiles para estimar el tono.';
+
+body.append(title,ids,info);
+card.append(swatch,body);
+root.append(card);
+});
+
+const first=groups.find(g=>g.members.some(f=>f.sample));
+
+if(first){
+const samples=first.members.map(f=>f.sample).filter(Boolean);
+const combined=classifyColor([
+median(samples.map(s=>s.rgb[0])),
+median(samples.map(s=>s.rgb[1])),
+median(samples.map(s=>s.rgb[2]))
+]);
+
+showResult(
+combined,
+'Estimación combinada de las muestras de color de la primera persona detectada.'
+);
+}
+
+$('status').textContent=`Listo: ${faces.length} rostro(s), agrupados en ${groups.length} persona(s). La estimación puede variar según la iluminación.`;
+}
+
+$('choosePhoto').onclick=()=>$('upload').click();
+
+$('upload').addEventListener('change',e=>{
+const f=e.target.files&&e.target.files[0];
+if(!f)return;
+
+if(stream){
+stream.getTracks().forEach(t=>t.stop());
+stream=null;
+}
+$('capture').disabled=true;
+
+const url=URL.createObjectURL(f);
+const img=new Image();
+
+img.onload=async()=>{
+$('video').style.display='none';
+$('canvas').style.display='block';
+$('canvas').classList.remove('hidden');
+$('placeholder').classList.add('hidden');
+$('target').style.display='none';
+
+try{
+await analyzeSource(img);
+}catch(error){
+$('status').textContent='Error: '+error.message;
+}finally{
+URL.revokeObjectURL(url);
+}
+};
+
+img.onerror=()=>{
+$('status').textContent='No se pudo abrir esa imagen.';
+URL.revokeObjectURL(url);
+};
+
+img.src=url;
+});
+
+$('start').onclick=async()=>{
+try{
+if(!navigator.mediaDevices?.getUserMedia)
+throw Error('La cámara requiere una página HTTPS.');
+
+if(stream)stream.getTracks().forEach(t=>t.stop());
+
+$('status').textContent='Solicitando acceso a la cámara…';
+
+try{
+stream=await navigator.mediaDevices.getUserMedia({
+video:{facingMode:'user',width:{ideal:1280},height:{ideal:720}},
+audio:false
+});
+}catch{
+stream=await navigator.mediaDevices.getUserMedia({video:true,audio:false});
+}
+
+const video=$('video');
+video.srcObject=stream;
+video.style.display='block';
+$('canvas').style.display='none';
+$('placeholder').classList.add('hidden');
+$('target').style.display='block';
+
+await new Promise((resolve,reject)=>{
+if(video.readyState>=1&&video.videoWidth)return resolve();
+video.onloadedmetadata=resolve;
+video.onerror=()=>reject(Error('No se pudo iniciar el video.'));
+});
+
+await video.play();
+$('capture').disabled=false;
+$('status').textContent='Cámara activa. Centrá la cara y tocá “Analizar piel”.';
+
+}catch(e){
+$('status').textContent='No se pudo activar la cámara: '+e.message+' También podés subir una foto.';
+}
+};
+
+$('capture').onclick=async()=>{
+const v=$('video');
+if(!v.videoWidth){
+$('status').textContent='Esperá a que la cámara termine de iniciar.';
+return;
+}
+
+$('capture').disabled=true;
+
+try{
+await analyzeSource(v);
+}catch(e){
+console.error(e);
+$('status').textContent='Error al analizar: '+e.message;
+}finally{
+$('capture').disabled=!stream;
+}
+};
+
+window.addEventListener('pagehide',()=>{
+if(stream)stream.getTracks().forEach(t=>t.stop());
 });
 
 renderScale();
