@@ -351,23 +351,16 @@
         : (sorted[middle - 1] + sorted[middle]) / 2;
     }
 
-    // v.1.1: calcula cada zona por separado para que una zona grande
-    // no domine el resultado si cambia ligeramente el tamaño del rostro.
+    // v.1.1: cada región se calcula por separado y tiene el mismo peso.
     function sampleSkinTone(box) {
       const x = box.originX;
       const y = box.originY;
       const w = box.width;
       const h = box.height;
 
-      // Las zonas se definen proporcionalmente al rostro detectado.
       const regions = [
-        // Frente central, evitando la línea del pelo.
         { x: 0.32, y: 0.23, w: 0.36, h: 0.12 },
-
-        // Mejilla izquierda.
         { x: 0.16, y: 0.48, w: 0.22, h: 0.15 },
-
-        // Mejilla derecha.
         { x: 0.62, y: 0.48, w: 0.22, h: 0.15 }
       ];
 
@@ -382,13 +375,11 @@
         );
         const right = clamp(
           Math.ceil(x + w * (region.x + region.w)),
-          left + 1,
-          canvas.width
+          left + 1, canvas.width
         );
         const bottom = clamp(
           Math.ceil(y + h * (region.y + region.h)),
-          top + 1,
-          canvas.height
+          top + 1, canvas.height
         );
 
         const width = right - left;
@@ -400,11 +391,9 @@
           left, top, width, height
         ).data;
 
-        // Mantiene un número de muestras parecido aunque cambie
-        // la resolución o el zoom de la fotografía.
-        const totalPixels = width * height;
+        // Muestreo adaptativo para resoluciones diferentes.
         const step = Math.max(
-          1, Math.floor(Math.sqrt(totalPixels / 350))
+          1, Math.floor(Math.sqrt((width * height) / 350))
         );
 
         const channels = [[], [], []];
@@ -420,8 +409,6 @@
             const min = Math.min(r, g, b);
             const brightness = (r + g + b) / 3;
 
-            // Excluye píxeles casi negros, sobreexpuestos
-            // o con diferencias cromáticas extremas.
             if (brightness < 25 || brightness > 245) continue;
             if (max - min > 100) continue;
 
@@ -431,7 +418,6 @@
           }
         }
 
-        // Cada región produce su propio color representativo.
         if (channels[0].length >= 5) {
           regionColors.push(channels.map(median));
         }
@@ -439,8 +425,6 @@
 
       if (regionColors.length === 0) return null;
 
-      // Combina las zonas con el mismo peso, en vez de juntar
-      // todos los píxeles en una sola muestra.
       return [0, 1, 2].map(channel =>
         median(regionColors.map(color => color[channel]))
       );
@@ -492,7 +476,7 @@
         detector = await FaceDetector.createFromOptions(vision, {
           baseOptions: {
             modelAssetPath:
-              "https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/float16/1/face_detector.tflite",
+              "https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite",
             delegate: "CPU"
           },
           runningMode: "IMAGE",
@@ -501,9 +485,9 @@
 
         return true;
       } catch (error) {
-        console.error(error);
+        console.error("Error al cargar MediaPipe:", error);
         setStatus(
-          "No se pudo cargar el detector. Revisá tu conexión a internet e intentá nuevamente."
+          "No se pudo cargar el detector. Revisá tu conexión o intentá recargar la página."
         );
         return false;
       }
@@ -616,7 +600,7 @@
           renderPerson(index, rgb);
         });
       } catch (error) {
-        console.error(error);
+        console.error("Error al analizar:", error);
         setStatus(
           "Ocurrió un error al analizar la foto. Intentá con otra imagen."
         );
