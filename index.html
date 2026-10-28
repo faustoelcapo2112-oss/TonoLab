@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TonoLab</title>
+  <title>TonoLab v.1.1</title>
 
   <style>
     * { box-sizing: border-box; }
@@ -30,6 +30,18 @@
     }
 
     .logo { color: #8de3d4; font-size: 28px; }
+
+    .version {
+      margin-left: auto;
+      padding: 5px 9px;
+      border: 1px solid #3a435a;
+      border-radius: 8px;
+      color: #8de3d4;
+      background: #1b2030;
+      font-size: 12px;
+      font-weight: 650;
+      letter-spacing: 0;
+    }
 
     .card {
       background: #1b2030;
@@ -125,7 +137,13 @@
       border: 1px solid #ffffff24;
     }
 
-    .person strong { display: block; font-size: 15px; line-height: 1.4; text-transform: capitalize; }
+    .person strong {
+      display: block;
+      font-size: 15px;
+      line-height: 1.4;
+      text-transform: capitalize;
+    }
+
     .person p { margin: 5px 0 0; color: #a5adc1; font-size: 13px; }
     .empty { color: #a5adc1; font-size: 14px; line-height: 1.5; }
 
@@ -149,6 +167,7 @@
     <header>
       <span class="logo">◉</span>
       <span>TonoLab</span>
+      <span class="version">v.1.1</span>
     </header>
 
     <section class="card">
@@ -323,40 +342,72 @@
 
     function median(values) {
       if (!values.length) return null;
-      values.sort((a, b) => a - b);
-      const middle = Math.floor(values.length / 2);
 
-      return values.length % 2
-        ? values[middle]
-        : (values[middle - 1] + values[middle]) / 2;
+      const sorted = [...values].sort((a, b) => a - b);
+      const middle = Math.floor(sorted.length / 2);
+
+      return sorted.length % 2
+        ? sorted[middle]
+        : (sorted[middle - 1] + sorted[middle]) / 2;
     }
 
+    // v.1.1: calcula cada zona por separado para que una zona grande
+    // no domine el resultado si cambia ligeramente el tamaño del rostro.
     function sampleSkinTone(box) {
       const x = box.originX;
       const y = box.originY;
       const w = box.width;
       const h = box.height;
 
+      // Las zonas se definen proporcionalmente al rostro detectado.
       const regions = [
-        { x: x + w * 0.30, y: y + h * 0.24, w: w * 0.40, h: h * 0.12 },
-        { x: x + w * 0.14, y: y + h * 0.48, w: w * 0.25, h: h * 0.17 },
-        { x: x + w * 0.61, y: y + h * 0.48, w: w * 0.25, h: h * 0.17 }
+        // Frente central, evitando la línea del pelo.
+        { x: 0.32, y: 0.23, w: 0.36, h: 0.12 },
+
+        // Mejilla izquierda.
+        { x: 0.16, y: 0.48, w: 0.22, h: 0.15 },
+
+        // Mejilla derecha.
+        { x: 0.62, y: 0.48, w: 0.22, h: 0.15 }
       ];
 
-      const channels = [[], [], []];
+      const regionColors = [];
 
       for (const region of regions) {
-        const left = clamp(Math.floor(region.x), 0, canvas.width - 1);
-        const top = clamp(Math.floor(region.y), 0, canvas.height - 1);
-        const right = clamp(Math.ceil(region.x + region.w), left + 1, canvas.width);
-        const bottom = clamp(Math.ceil(region.y + region.h), top + 1, canvas.height);
+        const left = clamp(
+          Math.floor(x + w * region.x), 0, canvas.width - 1
+        );
+        const top = clamp(
+          Math.floor(y + h * region.y), 0, canvas.height - 1
+        );
+        const right = clamp(
+          Math.ceil(x + w * (region.x + region.w)),
+          left + 1,
+          canvas.width
+        );
+        const bottom = clamp(
+          Math.ceil(y + h * (region.y + region.h)),
+          top + 1,
+          canvas.height
+        );
 
         const width = right - left;
         const height = bottom - top;
+
         if (width <= 0 || height <= 0) continue;
 
-        const data = ctx.getImageData(left, top, width, height).data;
-        const step = Math.max(1, Math.floor(Math.sqrt((width * height) / 450)));
+        const data = ctx.getImageData(
+          left, top, width, height
+        ).data;
+
+        // Mantiene un número de muestras parecido aunque cambie
+        // la resolución o el zoom de la fotografía.
+        const totalPixels = width * height;
+        const step = Math.max(
+          1, Math.floor(Math.sqrt(totalPixels / 350))
+        );
+
+        const channels = [[], [], []];
 
         for (let py = 0; py < height; py += step) {
           for (let px = 0; px < width; px += step) {
@@ -369,6 +420,8 @@
             const min = Math.min(r, g, b);
             const brightness = (r + g + b) / 3;
 
+            // Excluye píxeles casi negros, sobreexpuestos
+            // o con diferencias cromáticas extremas.
             if (brightness < 25 || brightness > 245) continue;
             if (max - min > 100) continue;
 
@@ -377,10 +430,20 @@
             channels[2].push(b);
           }
         }
+
+        // Cada región produce su propio color representativo.
+        if (channels[0].length >= 5) {
+          regionColors.push(channels.map(median));
+        }
       }
 
-      if (channels[0].length < 8) return null;
-      return channels.map(median);
+      if (regionColors.length === 0) return null;
+
+      // Combina las zonas con el mismo peso, en vez de juntar
+      // todos los píxeles en una sola muestra.
+      return [0, 1, 2].map(channel =>
+        median(regionColors.map(color => color[channel]))
+      );
     }
 
     function renderPerson(index, rgb) {
@@ -403,7 +466,8 @@
 
         swatch.style.backgroundColor = actualHex;
         heading.textContent = `${percentage}% — ${description}`;
-        detail.textContent = `Persona ${index + 1} · Color detectado: ${actualHex}`;
+        detail.textContent =
+          `Persona ${index + 1} · Color detectado: ${actualHex}`;
       } else {
         swatch.style.backgroundColor = "#30394d";
         detail.textContent =
@@ -428,7 +492,7 @@
         detector = await FaceDetector.createFromOptions(vision, {
           baseOptions: {
             modelAssetPath:
-              "https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite",
+              "https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/float16/1/face_detector.tflite",
             delegate: "CPU"
           },
           runningMode: "IMAGE",
@@ -438,7 +502,9 @@
         return true;
       } catch (error) {
         console.error(error);
-        setStatus("No se pudo cargar el detector. Revisá tu conexión a internet e intentá nuevamente.");
+        setStatus(
+          "No se pudo cargar el detector. Revisá tu conexión a internet e intentá nuevamente."
+        );
         return false;
       }
     }
@@ -496,7 +562,10 @@
         const maxDimension = 1800;
         const scale = Math.min(
           1,
-          maxDimension / Math.max(preview.naturalWidth, preview.naturalHeight)
+          maxDimension / Math.max(
+            preview.naturalWidth,
+            preview.naturalHeight
+          )
         );
 
         canvas.width = Math.round(preview.naturalWidth * scale);
@@ -510,7 +579,9 @@
         $("results").style.display = "block";
 
         if (detections.length === 0) {
-          setStatus("No se detectaron rostros. Probá con una foto frontal, bien iluminada y con los rostros visibles.");
+          setStatus(
+            "No se detectaron rostros. Probá con una foto frontal, bien iluminada y con los rostros visibles."
+          );
           $("people").innerHTML =
             '<p class="empty">No se encontraron personas para analizar.</p>';
           return;
@@ -529,7 +600,9 @@
           ctx.save();
           ctx.strokeStyle = "#8de3d4";
           ctx.lineWidth = Math.max(2, canvas.width / 350);
-          ctx.strokeRect(box.originX, box.originY, box.width, box.height);
+          ctx.strokeRect(
+            box.originX, box.originY, box.width, box.height
+          );
 
           ctx.fillStyle = "#8de3d4";
           ctx.font = `bold ${Math.max(14, canvas.width / 45)}px sans-serif`;
@@ -544,7 +617,9 @@
         });
       } catch (error) {
         console.error(error);
-        setStatus("Ocurrió un error al analizar la foto. Intentá con otra imagen.");
+        setStatus(
+          "Ocurrió un error al analizar la foto. Intentá con otra imagen."
+        );
       } finally {
         analyzeButton.disabled = false;
         analyzeButton.textContent = "Analizar foto";
